@@ -1,24 +1,89 @@
 import React, { useState } from 'react';
 import Dashboard from './components/Dashboard';
 import EditAvatar from './components/EditAvatar';
-import './App.css'; // 保留现有的样式文件
+import CommercialDashboard from './components/CommercialDashboard';
+import TopNavbar from './components/TopNavbar';
+import './App.css';
 
 function App() {
-  const [page, setPage] = useState('dashboard'); // 初始页面为仪表盘
+  const [currentPage, setCurrentPage] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('ai');
+  const [userInfo, setUserInfo] = useState({
+    name: '管理员',
+    email: 'admin@plusco.com',
+    avatar: null
+  });
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage); // 更新页面状态
+  // 处理标签切换
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    
+    const pageMap = {
+      'talent': 'dashboard',
+      'content': 'dashboard', 
+      'commercial': 'commercial',
+      'ai': 'dashboard'
+    };
+    
+    if (pageMap[tabKey]) {
+      setCurrentPage(pageMap[tabKey]);
+    }
+  };
+
+  // 用户操作函数
+  const handleLogin = () => {
+    console.log('跳转到登录页面');
+  };
+
+  const handleLogout = () => {
+    setUserInfo(null);
+    console.log('用户已退出登录');
+  };
+
+  const handleProfile = () => {
+    console.log('跳转到个人资料页面');
+  };
+
+  // 渲染页面内容（不包含导航栏）
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
+      case 'commercial':
+        return <CommercialDashboard />;
+      case 'editAvatar':
+        return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
+      default:
+        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
+    }
   };
 
   return (
     <div className="App">
-      {page === 'dashboard' ? (
-        <Dashboard onEditAvatar={() => handlePageChange('editAvatar')} />
-      ) : (
-        <EditAvatar onBack={() => handlePageChange('dashboard')} />
-      )}
+      {/* TopNavbar 放在 App.js 中，统一管理 */}
+      <TopNavbar 
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        userInfo={userInfo}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+        onProfile={handleProfile}
+      />
+      
+      {/* 页面内容区域 */}
+      <div style={styles.content}>
+        {renderPageContent()}
+      </div>
     </div>
   );
 }
+
+const styles = {
+  content: {
+    padding: '24px',
+    backgroundColor: '#f5f7fa',
+    minHeight: 'calc(100vh - 80px)', // 减去导航栏高度
+  }
+};
 
 export default App;

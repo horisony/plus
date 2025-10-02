@@ -25,44 +25,62 @@ const Card = ({ title, children, style }) => (
   </div>
 );
 
-// 年龄和性格选择组件
-const AgeAndPersonality = () => {
-  const [selectedAge, setSelectedAge] = useState('25-35岁');
-  const [selectedPersonality, setSelectedPersonality] = useState('专业稳重');
+// 人设与回复组件
+const PersonaAndReply = () => {
+  const [persona, setPersona] = useState(`你是一个专业的咨询师，你擅长回答用户的问题。
+
+## 技能
+1. 回答用户的提问。
+2. 抚慰用户的情绪。
+3. 调用知识库。`);
 
   return (
-    <Card title="👤 基本设置">
-      <div style={styles.doubleSelectContainer}>
-        <div style={styles.selectGroup}>
-          <label style={styles.selectLabel}>默认年龄</label>
-          <select 
-            value={selectedAge} 
-            onChange={(e) => setSelectedAge(e.target.value)}
-            style={styles.select}
-          >
-            <option>18-25岁</option>
-            <option>25-35岁</option>
-            <option>35-45岁</option>
-            <option>45岁以上</option>
-          </select>
-        </div>
-        <div style={styles.selectGroup}>
-          <label style={styles.selectLabel}>默认性格</label>
-          <select 
-            value={selectedPersonality} 
-            onChange={(e) => setSelectedPersonality(e.target.value)}
-            style={styles.select}
-          >
-            <option>专业稳重</option>
-            <option>热情开朗</option>
-            <option>温柔耐心</option>
-            <option>幽默风趣</option>
-            <option>严谨细致</option>
-          </select>
-        </div>
+    <Card title="👤 人设与回复">
+      <textarea
+        value={persona}
+        onChange={(e) => setPersona(e.target.value)}
+        style={styles.textarea}
+        rows={8}
+        placeholder="请输入分身的人设描述..."
+      />
+      <div style={styles.tips}>
+        💡 提示：详细的人设描述可以帮助分身更好地理解角色定位
       </div>
-      <div style={styles.personalityDesc}>
-        当前设置：{selectedAge}，{selectedPersonality}风格
+    </Card>
+  );
+};
+
+// 模型选择组件
+const ModelSelection = () => {
+  const [selectedModel, setSelectedModel] = useState('DeepSeek R1');
+
+  return (
+    <Card title="🤖 模型选择">
+      <div style={styles.selectContainer}>
+        <select 
+          value={selectedModel} 
+          onChange={(e) => setSelectedModel(e.target.value)}
+          style={styles.select}
+        >
+          <option>DeepSeek R1</option>
+          <option>GPT-4</option>
+          <option>Claude-3</option>
+          <option>文心一言</option>
+        </select>
+      </div>
+      <div style={styles.modelInfo}>
+        <div style={styles.infoItem}>
+          <span style={styles.infoLabel}>版本:</span>
+          <span>最新版</span>
+        </div>
+        <div style={styles.infoItem}>
+          <span style={styles.infoLabel}>上下文:</span>
+          <span>128K tokens</span>
+        </div>
+        <div style={styles.infoItem}>
+          <span style={styles.infoLabel}>特点:</span>
+          <span>推理能力强，适合对话场景</span>
+        </div>
       </div>
     </Card>
   );
@@ -193,9 +211,14 @@ const EditAvatar = () => {
       <EditNavbar onBack={handleBack} />
       
       <div style={styles.content}>
-        {/* 左侧栏 - 基本设置和其他配置 */}
+        {/* 左侧栏 - 人设和回复 */}
         <div style={styles.leftColumn}>
-          <AgeAndPersonality />
+          <PersonaAndReply />
+        </div>
+
+        {/* 中间栏 - 模型选择和其他设置 */}
+        <div style={styles.middleColumn}>
+          <ModelSelection />
           <KnowledgeBase />
           <AppearanceSettings />
           <VoiceSettings />
@@ -259,10 +282,15 @@ const styles = {
   },
   content: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: '1fr 1fr 1fr',
     gap: '20px',
   },
   leftColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '20px',
+  },
+  middleColumn: {
     display: 'flex',
     flexDirection: 'column',
     gap: '20px',
@@ -284,21 +312,23 @@ const styles = {
     fontWeight: '600',
     color: '#333',
   },
-  doubleSelectContainer: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
-    marginBottom: '12px',
+  textarea: {
+    width: '100%',
+    padding: '12px',
+    border: '1px solid #ddd',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    resize: 'vertical',
+    boxSizing: 'border-box',
   },
-  selectGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '6px',
-  },
-  selectLabel: {
-    fontSize: '13px',
-    fontWeight: '500',
+  tips: {
+    fontSize: '12px',
     color: '#666',
+    marginTop: '8px',
+  },
+  selectContainer: {
+    marginBottom: '16px',
   },
   select: {
     width: '100%',
@@ -308,12 +338,19 @@ const styles = {
     fontSize: '14px',
     backgroundColor: '#fff',
   },
-  personalityDesc: {
-    fontSize: '13px',
-    color: '#666',
-    fontStyle: 'italic',
-    padding: '8px 0',
+  modelInfo: {
     borderTop: '1px solid #f0f0f0',
+    paddingTop: '12px',
+  },
+  infoItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '8px',
+    fontSize: '13px',
+  },
+  infoLabel: {
+    color: '#666',
+    fontWeight: '500',
   },
   uploadArea: {
     border: '2px dashed #ddd',
@@ -389,9 +426,6 @@ const styles = {
     cursor: 'pointer',
     fontSize: '13px',
   },
-  selectContainer: {
-    marginBottom: '16px',
-  },
   voicePreview: {
     marginTop: '12px',
   },
@@ -458,6 +492,25 @@ const styles = {
     lineHeight: '1.4',
     maxWidth: '70%',
   },
+  messageBubbleBot: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+    '& $messageContent': {
+      backgroundColor: '#e6f7ff',
+      border: '1px solid #bae7ff',
+    },
+  },
+  messageBubbleUser: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+    justifyContent: 'flex-end',
+    '& $messageContent': {
+      backgroundColor: '#f6ffed',
+      border: '1px solid #b7eb8f',
+    },
+  },
   debugInput: {
     display: 'flex',
     gap: '8px',
@@ -482,32 +535,6 @@ const styles = {
     fontSize: '13px',
     fontWeight: '500',
   },
-};
-
-// 为消息气泡添加样式
-Object.assign(styles, {
-  messageBubbleBot: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '8px',
-  },
-  messageBubbleUser: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '8px',
-    justifyContent: 'flex-end',
-  },
-});
-
-// 为消息内容添加样式
-const messageContentBot = {
-  backgroundColor: '#e6f7ff',
-  border: '1px solid #bae7ff',
-};
-
-const messageContentUser = {
-  backgroundColor: '#f6ffed',
-  border: '1px solid #b7eb8f',
 };
 
 export default EditAvatar;
