@@ -25,37 +25,12 @@ const Card = ({ title, children, style }) => (
   </div>
 );
 
-// 人设与回复组件
-const PersonaAndReply = () => {
-  const [persona, setPersona] = useState(`你是一个专业的咨询师，你擅长回答用户的问题。
-
-## 技能
-1. 回答用户的提问。
-2. 抚慰用户的情绪。
-3. 调用知识库。`);
-
-  return (
-    <Card title="👤 人设与回复">
-      <textarea
-        value={persona}
-        onChange={(e) => setPersona(e.target.value)}
-        style={styles.textarea}
-        rows={8}
-        placeholder="请输入分身的人设描述..."
-      />
-      <div style={styles.tips}>
-        💡 提示：详细的人设描述可以帮助分身更好地理解角色定位
-      </div>
-    </Card>
-  );
-};
-
 // 模型选择组件
 const ModelSelection = () => {
   const [selectedModel, setSelectedModel] = useState('DeepSeek R1');
 
   return (
-    <Card title="🤖 模型选择">
+    <Card title="🤖 模型选择" style={styles.modelCard}>
       <div style={styles.selectContainer}>
         <select 
           value={selectedModel} 
@@ -89,7 +64,7 @@ const ModelSelection = () => {
 // 知识库组件
 const KnowledgeBase = () => {
   return (
-    <Card title="📚 知识库">
+    <Card title="📚 知识库" style={styles.knowledgeCard}>
       <div style={styles.uploadArea}>
         <div style={styles.uploadIcon}>📄</div>
         <div style={styles.uploadText}>上传文档丰富分身知识</div>
@@ -99,11 +74,11 @@ const KnowledgeBase = () => {
       </div>
       <div style={styles.fileList}>
         <div style={styles.fileItem}>
-          <span>产品手册.pdf</span>
+          <span style={styles.fileName}>产品手册.pdf</span>
           <span style={styles.fileSize}>2.3MB</span>
         </div>
         <div style={styles.fileItem}>
-          <span>常见问题.docx</span>
+          <span style={styles.fileName}>常见问题.docx</span>
           <span style={styles.fileSize}>1.1MB</span>
         </div>
       </div>
@@ -114,7 +89,7 @@ const KnowledgeBase = () => {
 // 形象设置组件
 const AppearanceSettings = () => {
   return (
-    <Card title="🎨 默认形象">
+    <Card title="🎨 默认形象" style={styles.appearanceCard}>
       <div style={styles.avatarUpload}>
         <div style={styles.avatarPlaceholder}>
           <div style={styles.avatarIcon}>👤</div>
@@ -133,7 +108,7 @@ const VoiceSettings = () => {
   const [selectedVoice, setSelectedVoice] = useState('帅气男声');
 
   return (
-    <Card title="🔊 默认声音">
+    <Card title="🔊 默认声音" style={styles.voiceCard}>
       <div style={styles.selectContainer}>
         <select 
           value={selectedVoice} 
@@ -211,15 +186,14 @@ const EditAvatar = () => {
       <EditNavbar onBack={handleBack} />
       
       <div style={styles.content}>
-        {/* 左侧栏 - 人设和回复 */}
+        {/* 左侧栏 - 模型选择和知识库 */}
         <div style={styles.leftColumn}>
-          <PersonaAndReply />
-        </div>
-
-        {/* 中间栏 - 模型选择和其他设置 */}
-        <div style={styles.middleColumn}>
           <ModelSelection />
           <KnowledgeBase />
+        </div>
+
+        {/* 中间栏 - 形象和声音设置 */}
+        <div style={styles.middleColumn}>
           <AppearanceSettings />
           <VoiceSettings />
         </div>
@@ -263,6 +237,7 @@ const styles = {
     backgroundColor: '#fff',
     cursor: 'pointer',
     fontSize: '14px',
+    transition: 'all 0.2s ease',
   },
   navTitle: {
     margin: 0,
@@ -279,11 +254,13 @@ const styles = {
     cursor: 'pointer',
     fontWeight: '600',
     fontSize: '14px',
+    transition: 'all 0.2s ease',
   },
   content: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr 1fr',
     gap: '20px',
+    alignItems: 'start',
   },
   leftColumn: {
     display: 'flex',
@@ -312,20 +289,9 @@ const styles = {
     fontWeight: '600',
     color: '#333',
   },
-  textarea: {
-    width: '100%',
-    padding: '12px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontFamily: 'inherit',
-    resize: 'vertical',
-    boxSizing: 'border-box',
-  },
-  tips: {
-    fontSize: '12px',
-    color: '#666',
-    marginTop: '8px',
+  // 模型选择卡片
+  modelCard: {
+    minHeight: '200px',
   },
   selectContainer: {
     marginBottom: '16px',
@@ -352,12 +318,17 @@ const styles = {
     color: '#666',
     fontWeight: '500',
   },
+  // 知识库卡片
+  knowledgeCard: {
+    minHeight: '250px',
+  },
   uploadArea: {
     border: '2px dashed #ddd',
     borderRadius: '8px',
     padding: '24px',
     textAlign: 'center',
     marginBottom: '16px',
+    transition: 'all 0.3s ease',
   },
   uploadIcon: {
     fontSize: '32px',
@@ -376,6 +347,7 @@ const styles = {
     color: '#1890ff',
     cursor: 'pointer',
     fontSize: '13px',
+    transition: 'all 0.2s ease',
   },
   fileList: {
     display: 'flex',
@@ -390,10 +362,18 @@ const styles = {
     backgroundColor: '#f8f9fa',
     borderRadius: '6px',
     fontSize: '13px',
+    transition: 'background-color 0.2s ease',
+  },
+  fileName: {
+    fontWeight: '500',
   },
   fileSize: {
     color: '#999',
     fontSize: '12px',
+  },
+  // 形象设置卡片
+  appearanceCard: {
+    minHeight: '250px',
   },
   avatarUpload: {
     marginBottom: '16px',
@@ -408,6 +388,7 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     cursor: 'pointer',
+    transition: 'all 0.3s ease',
   },
   avatarIcon: {
     fontSize: '24px',
@@ -425,6 +406,11 @@ const styles = {
     backgroundColor: '#fff',
     cursor: 'pointer',
     fontSize: '13px',
+    transition: 'all 0.2s ease',
+  },
+  // 声音设置卡片
+  voiceCard: {
+    minHeight: '180px',
   },
   voicePreview: {
     marginTop: '12px',
@@ -437,7 +423,9 @@ const styles = {
     backgroundColor: '#fff',
     cursor: 'pointer',
     fontSize: '13px',
+    transition: 'all 0.2s ease',
   },
+  // 预览卡片
   previewCard: {
     height: 'fit-content',
   },
@@ -492,25 +480,6 @@ const styles = {
     lineHeight: '1.4',
     maxWidth: '70%',
   },
-  messageBubbleBot: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '8px',
-    '& $messageContent': {
-      backgroundColor: '#e6f7ff',
-      border: '1px solid #bae7ff',
-    },
-  },
-  messageBubbleUser: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '8px',
-    justifyContent: 'flex-end',
-    '& $messageContent': {
-      backgroundColor: '#f6ffed',
-      border: '1px solid #b7eb8f',
-    },
-  },
   debugInput: {
     display: 'flex',
     gap: '8px',
@@ -534,7 +503,85 @@ const styles = {
     cursor: 'pointer',
     fontSize: '13px',
     fontWeight: '500',
+    transition: 'all 0.2s ease',
   },
 };
+
+// 添加悬停效果
+Object.assign(styles, {
+  backButton: {
+    ...styles.backButton,
+    ':hover': {
+      backgroundColor: '#f5f5f5',
+      borderColor: '#ccc',
+    }
+  },
+  publishButton: {
+    ...styles.publishButton,
+    ':hover': {
+      backgroundColor: '#d32f2f',
+      transform: 'translateY(-1px)',
+    }
+  },
+  uploadArea: {
+    ...styles.uploadArea,
+    ':hover': {
+      borderColor: '#1890ff',
+      backgroundColor: '#f8fbff',
+    }
+  },
+  uploadButton: {
+    ...styles.uploadButton,
+    ':hover': {
+      backgroundColor: '#1890ff',
+      color: '#fff',
+    }
+  },
+  fileItem: {
+    ...styles.fileItem,
+    ':hover': {
+      backgroundColor: '#e9ecef',
+    }
+  },
+  avatarPlaceholder: {
+    ...styles.avatarPlaceholder,
+    ':hover': {
+      borderColor: '#1890ff',
+      backgroundColor: '#f8fbff',
+    }
+  },
+  uploadImageButton: {
+    ...styles.uploadImageButton,
+    ':hover': {
+      backgroundColor: '#f5f5f5',
+    }
+  },
+  previewButton: {
+    ...styles.previewButton,
+    ':hover': {
+      backgroundColor: '#f5f5f5',
+    }
+  },
+  sendButton: {
+    ...styles.sendButton,
+    ':hover': {
+      backgroundColor: '#096dd9',
+    }
+  },
+  messageBubbleBot: {
+    ...styles.messageBubbleBot,
+    '& $messageContent': {
+      backgroundColor: '#e6f7ff',
+      border: '1px solid #bae7ff',
+    },
+  },
+  messageBubbleUser: {
+    ...styles.messageBubbleUser,
+    '& $messageContent': {
+      backgroundColor: '#f6ffed',
+      border: '1px solid #b7eb8f',
+    },
+  },
+});
 
 export default EditAvatar;

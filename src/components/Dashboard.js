@@ -42,9 +42,9 @@ const WarningCard = ({ type, count, data }) => (
 const TopicSection = ({ type, tags }) => {
   // 圆形标签云布局
   const renderCircularTagCloud = () => {
-    const radius = 100; // 圆的半径
-    const centerX = 150; // 圆心X坐标
-    const centerY = 120; // 圆心Y坐标
+    const radius = 80; // 圆的半径
+    const centerX = 120; // 圆心X坐标
+    const centerY = 100; // 圆心Y坐标
     const totalTags = tags.length;
     
     return tags.map((tag, index) => {
@@ -56,7 +56,7 @@ const TopicSection = ({ type, tags }) => {
       };
 
       // 根据权重计算字体大小和透明度
-      const fontSize = 12 + tagData.weight * 8; // 12-20px
+      const fontSize = 10 + tagData.weight * 6; // 10-16px
       const opacity = 0.6 + tagData.weight * 0.4; // 0.6-1.0
       
       // 计算标签在圆上的位置（等间距分布）
@@ -122,12 +122,12 @@ const Dashboard = ({ onEditAvatar }) => {
     { label: '情绪低预警达人人数', value: '63' },
     { label: '情绪高预警达人人数', value: '82' },
     { label: '总计对话数', value: '83,921' },
-    { label: '全部达人人数', value: '24,351' }
+    { label: '全部达人人数', value: '24,3521' }
   ];
 
   return (
     <div style={styles.container}>
-      {/* 统计信息 - 合并到一个栏目 */}
+      {/* 统计信息 */}
       <div style={styles.statsContainer}>
         <div style={styles.statsCard}>
           <div style={styles.statsGrid}>
@@ -141,25 +141,24 @@ const Dashboard = ({ onEditAvatar }) => {
         </div>
       </div>
 
-      {/* 预警达人和话题标签 */}
-      <div style={styles.contentGrid}>
-        <div style={styles.column}>
-          <WarningCard 
-            type="low" 
-            count={63} 
-            data={lowWarningData} 
-          />
-          <WarningCard 
-            type="high" 
-            count={82} 
-            data={highWarningData} 
-          />
-        </div>
-        
-        <div style={styles.column}>
-          <TopicSection type="low" tags={lowTags} />
-          <TopicSection type="high" tags={highTags} />
-        </div>
+      {/* 第一行：预警达人 - 在同一行内横向排列 */}
+      <div style={styles.horizontalRow}>
+        <WarningCard 
+          type="low" 
+          count={63} 
+          data={lowWarningData} 
+        />
+        <WarningCard 
+          type="high" 
+          count={82} 
+          data={highWarningData} 
+        />
+      </div>
+
+      {/* 第二行：预警话题 - 在同一行内横向排列 */}
+      <div style={styles.horizontalRow}>
+        <TopicSection type="low" tags={lowTags} />
+        <TopicSection type="high" tags={highTags} />
       </div>
     </div>
   );
@@ -170,6 +169,7 @@ const styles = {
   container: {
     maxWidth: '1400px',
     margin: '0 auto',
+    padding: '20px',
   },
   
   // 统计信息区域
@@ -220,16 +220,12 @@ const styles = {
     whiteSpace: 'nowrap',
   },
   
-  // 内容网格布局
-  contentGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px',
-  },
-  column: {
+  // 横向排列的行
+  horizontalRow: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     gap: '24px',
+    marginBottom: '24px',
   },
   
   // 预警卡片样式
@@ -238,6 +234,8 @@ const styles = {
     borderRadius: '12px',
     padding: '20px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    flex: 1,
+    minHeight: '300px',
   },
   lowWarning: {
     borderLeft: '4px solid #ff4d4f',
@@ -313,18 +311,21 @@ const styles = {
     padding: '20px',
     borderRadius: '12px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    flex: 1,
+    minHeight: '250px',
   },
   topicTitle: {
     margin: '0 0 16px 0',
     fontSize: '16px',
     fontWeight: '600',
+    textAlign: 'center',
   },
   
   // 圆形标签云样式
   circularCloudContainer: {
     position: 'relative',
-    width: '300px',
-    height: '240px',
+    width: '240px',
+    height: '200px',
     margin: '0 auto',
     display: 'flex',
     justifyContent: 'center',
