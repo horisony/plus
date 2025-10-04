@@ -1,0 +1,51 @@
+{
+  "navigation": {
+    "newConversation": "新建对话",
+    "competitorTracking": "竞品视频跟踪",
+    "historyConversations": "历史对话",
+    "commercialIntent": "商业化意向达成后，自动出现在对话列表"
+  },
+  "tabs": {
+    "shortVideo": "短视频文案",
+    "liveStream": "直播文案"
+  },
+  "placeholders": {
+    "messageInput": "发消息",
+    "examplePrompt": "写一个短视频文案，讲讲罗永浩和西贝",
+    "initialPrompt": "发消息",
+    "emptyState": "输入你的想法，让 PLUSCO 为你生成短视频文案"
+  },
+  "quickPrompts": {
+    "shortVideo": "短视频文案",
+    "liveStream": "直播文案"
+  },
+  "sections": {
+    "fanFavorites": "粉丝喜欢看",
+    "hotTopics": "热点",
+    "trends": "趋势",
+    "inspirationSnippets": "灵感碎片"
+  },
+  "fanFavorites": [
+    "商业采访",
+    "非遗",
+    "宠物",
+    "舞蹈"
+  ],
+  "hotTopics": [
+    "罗永浩 西贝",
+    "iPhone 17 首曝",
+    "台风停工不能以调休冲抵"
+  ],
+  "trends": [
+    "多巴胺穿搭"
+  ],
+  "inspirationSnippets": [
+    "参加得到新商学，王润宇讲的视频号的逻辑很清晰，值得学习，其中微信小店是一个必须开起来的，机会很大。"
+  ],
+  "historyConversations": [
+    "羊毛袜带货",
+    "美妆带货",
+    "珀莱雅带货"
+  ]
+}
+

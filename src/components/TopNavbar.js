@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AiOutlineMessage } from 'react-icons/ai';
 
 const TopNavbar = ({ 
   activeTab, 
@@ -11,7 +12,7 @@ const TopNavbar = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const tabs = [
-    { key: 'talent', label: '达人广场' },
+    { key: 'data', label: '智慧数据管家' },
     { key: 'content', label: '内容运营' },
     { key: 'commercial', label: '商业化' },
     { key: 'ai', label: 'AI 经纪人' }
@@ -22,12 +23,12 @@ const TopNavbar = ({
       {/* 左侧品牌Logo */}
       <div style={styles.navLeft}>
         <div style={styles.logoContainer}>
-              <img src="/PLUSCO-LOGO.jpg" alt="PlusCo" style={styles.logoImage}
-    />
+          <img src="/brand/PLUSCO-logo.png" alt="PLUSCO" style={styles.logoImage} />
+          <span style={styles.brandName}>PLUSCO</span>
         </div>
       </div>
 
-      {/* 中间导航标签 */}
+      {/* 右侧导航标签（靠右） */}
       <div style={styles.navCenter}>
         {tabs.map(tab => (
           <button
@@ -39,13 +40,16 @@ const TopNavbar = ({
             onClick={() => onTabChange(tab.key)}
           >
             {tab.label}
-            {activeTab === tab.key && <div style={styles.activeIndicator} />}
+            {activeTab === tab.key && <div style={styles.activeUnderline} />}
           </button>
         ))}
       </div>
 
       {/* 右侧用户区域 */}
       <div style={styles.navRight}>
+        <div style={styles.actions}>
+          <AiOutlineMessage size={20} color="#111" />
+        </div>
         <div 
           style={styles.userArea}
           onMouseEnter={() => setShowUserMenu(true)}
@@ -125,58 +129,56 @@ const styles = {
         marginLeft: '50px', // 推荐使用这个方式
 
   },
-  logoIcon: {
-    fontSize: '24px',
+  logoImage: {
+    width: '60px',
+    height: '60px',
+    objectFit: 'contain',
+    transform: 'scale(1.09)',
+    marginTop: '4px',
   },
   brandName: {
     fontSize: '20px',
     fontWeight: '700',
-    background: 'linear-gradient(135deg, #2563eb, #7c3aed)',
-    backgroundClip: 'text',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
+    color: '#1a1a1a',
   },
   navCenter: {
+    marginLeft: 'auto',
     display: 'flex',
-    gap: '4px',
-    backgroundColor: 'rgba(0, 0, 0, 0.02)',
-    borderRadius: '6px',
-    padding: '4px',
+    gap: '40px',
+    alignItems: 'center',
   },
   tabButton: {
-    padding: '6px 12px',
+    padding: '12px 4px',
     border: 'none',
-    borderRadius: '4px',
     backgroundColor: 'transparent',
-    color: '#666666',
-    fontSize: '14px',
+    color: '#444',
+    fontSize: '15px',
     fontWeight: '500',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
     position: 'relative',
   },
   activeTab: {
-    backgroundColor: 'rgba(37, 99, 235, 0.1)',
     color: '#2563eb',
   },
-  activeIndicator: {
+  activeUnderline: {
     position: 'absolute',
-    bottom: '-4px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    width: '4px',
-    height: '4px',
-    borderRadius: '50%',
+    bottom: '-12px',
+    left: 0,
+    width: '100%',
+    height: '3px',
     backgroundColor: '#2563eb',
+    borderRadius: '2px',
   },
   navRight: {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '32px',
   },
   actions: {
     display: 'flex',
     gap: '12px',
+    marginLeft: '64px',
   },
   upgradeButton: {
     padding: '6px 12px',

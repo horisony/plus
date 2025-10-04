@@ -5,10 +5,12 @@ import EditAvatar from './components/EditAvatar';
 import CommercialDashboard from './components/CommercialDashboard';
 import TopNavbar from './components/TopNavbar';
 import WarningCardDetail from './components/WarningCardDetail';
+import { ContentOpsPage } from './features/content-ops';
+import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('ai');
+  const [activeTab, setActiveTab] = useState('data');
   const [userInfo, setUserInfo] = useState({
     name: '管理员',
     email: 'admin@plusco.com',
@@ -21,18 +23,45 @@ function App() {
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     const pageMap = {
-      'talent': '/',
-      'content': '/',
-      'commercial': '/commercial',
-      'ai': '/'
+      'data': 'dataAnalytics',
+      'content': 'contentOps', 
+      'commercial': 'commercial',
+      'ai': 'dashboard'
     };
     if (pageMap[tabKey]) navigate(pageMap[tabKey]);
   };
 
   // 用户操作函数
-  const handleLogin = () => { console.log('跳转到登录页面'); };
-  const handleLogout = () => { setUserInfo(null); console.log('用户已退出登录'); };
-  const handleProfile = () => { console.log('跳转到个人资料页面'); };
+  const handleLogin = () => {
+    console.log('跳转到登录页面');
+  };
+
+  const handleLogout = () => {
+    setUserInfo(null);
+    console.log('用户已退出登录');
+  };
+
+  const handleProfile = () => {
+    console.log('跳转到个人资料页面');
+  };
+
+  // 渲染页面内容（不包含导航栏）
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 'dataAnalytics':
+        return <DataAnalyticsApp />;
+      case 'dashboard':
+        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
+      case 'commercial':
+        return <CommercialDashboard />;
+      case 'contentOps':
+        return <ContentOpsPage />;
+      case 'editAvatar':
+        return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
+      default:
+        return <DataAnalyticsApp />;
+    }
+  };
 
   return (
     <div className="App">
