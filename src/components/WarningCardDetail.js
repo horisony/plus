@@ -86,22 +86,20 @@ const WarningCardDetail = ({ type: propType }) => {
       <div style={styles.tableControls}>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: '1 1 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>品牌</label>
             <input
               placeholder="输入品牌名"
               value={brandFilter}
               onChange={(e) => { setBrandFilter(e.target.value); setPage(1); }}
-              style={{ ...styles.searchInput, width: 220 }}
+              style={{ ...styles.searchInput, width: 160 }}
             />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <label style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>关键词</label>
             <input
               placeholder="达人名 / 预警 / 建议"
               value={keywordFilter}
               onChange={(e) => { setKeywordFilter(e.target.value); setPage(1); }}
-              style={{ ...styles.searchInput, width: 320 }}
+              style={{ ...styles.searchInput, width: 240 }}
             />
           </div>
         </div>
@@ -314,10 +312,10 @@ const styles = {
     gap: '12px',
   },
   searchInput: {
-    flex: '1 1 320px',
-    padding: '8px 10px',
-    borderRadius: '6px',
-    border: '1px solid #ddd',
+    flex: '0 0 auto',
+    padding: '6px 8px',
+    borderRadius: '4px',
+    border: '1px solid #e0e0e0',
   },
   pageSizeWrap: {
     display: 'flex',
