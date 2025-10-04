@@ -22,8 +22,8 @@ const TopNavbar = ({
       {/* 左侧品牌Logo */}
       <div style={styles.navLeft}>
         <div style={styles.logoContainer}>
-          <div style={styles.logoIcon}>🤖</div>
-          <span style={styles.brandName}>PlusCo</span>
+              <img src="/PLUSCO-LOGO.jpg" alt="PlusCo" style={styles.logoImage}
+    />
         </div>
       </div>
 
@@ -46,11 +46,6 @@ const TopNavbar = ({
 
       {/* 右侧用户区域 */}
       <div style={styles.navRight}>
-        <div style={styles.actions}>
-          <button style={styles.upgradeButton}>
-            ⚡ 专业版
-          </button>
-        </div>
         <div 
           style={styles.userArea}
           onMouseEnter={() => setShowUserMenu(true)}
@@ -127,6 +122,8 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
+        marginLeft: '50px', // 推荐使用这个方式
+
   },
   logoIcon: {
     fontSize: '24px',
@@ -286,6 +283,12 @@ Object.assign(styles, {
     ':hover': {
       backgroundColor: '#f5f5f5',
     }
+  },
+   logoImage: {
+    width: '32px',
+    height: '32px',
+    objectFit: 'contain',
+    transform: 'scale(2.2)', // 放大1.5倍，实际显示为48x48，但占位还是32x32
   },
 });
 

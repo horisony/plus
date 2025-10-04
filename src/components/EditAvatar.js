@@ -11,7 +11,7 @@ const EditNavbar = ({ onBack }) => {
         <h1 style={styles.navTitle}>编辑分身</h1>
       </div>
       <button style={styles.publishButton}>
-        🚀 发布分身
+        发布分身
       </button>
     </div>
   );
@@ -25,41 +25,36 @@ const Card = ({ title, children, style }) => (
   </div>
 );
 
-// 模型选择组件
-const ModelSelection = () => {
-  const [selectedModel, setSelectedModel] = useState('DeepSeek R1');
+// 默认属性 tab（年龄、性格）
+const DefaultsTabs = () => {
+  const [age, setAge] = useState('26-35');
+  const [personality, setPersonality] = useState('开朗');
 
   return (
-    <Card title="🤖 模型选择" style={styles.modelCard}>
-      <div style={styles.selectContainer}>
-        <select 
-          value={selectedModel} 
-          onChange={(e) => setSelectedModel(e.target.value)}
-          style={styles.select}
-        >
-          <option>DeepSeek R1</option>
-          <option>GPT-4</option>
-          <option>Claude-3</option>
-          <option>文心一言</option>
+    <div style={styles.defaultsRow}>
+      <div style={styles.defaultTab}>
+        <div style={styles.defaultLabel}>默认年龄</div>
+        <select value={age} onChange={(e) => setAge(e.target.value)} style={styles.defaultSelect}>
+          <option value="18-25">18-25</option>
+          <option value="26-35">26-35</option>
+          <option value="36-45">36-45</option>
+          <option value="46+">46+</option>
         </select>
       </div>
-      <div style={styles.modelInfo}>
-        <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>版本:</span>
-          <span>最新版</span>
-        </div>
-        <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>上下文:</span>
-          <span>128K tokens</span>
-        </div>
-        <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>特点:</span>
-          <span>推理能力强，适合对话场景</span>
-        </div>
+      <div style={styles.defaultTab}>
+        <div style={styles.defaultLabel}>默认性格</div>
+        <select value={personality} onChange={(e) => setPersonality(e.target.value)} style={styles.defaultSelect}>
+          <option>开朗</option>
+          <option>温和</option>
+          <option>专业</option>
+          <option>幽默</option>
+        </select>
       </div>
-    </Card>
+    </div>
   );
 };
+
+// 模型选择组件 （已移除）
 
 // 知识库组件
 const KnowledgeBase = () => {
@@ -71,16 +66,6 @@ const KnowledgeBase = () => {
         <button style={styles.uploadButton}>
           选择文件
         </button>
-      </div>
-      <div style={styles.fileList}>
-        <div style={styles.fileItem}>
-          <span style={styles.fileName}>产品手册.pdf</span>
-          <span style={styles.fileSize}>2.3MB</span>
-        </div>
-        <div style={styles.fileItem}>
-          <span style={styles.fileName}>常见问题.docx</span>
-          <span style={styles.fileSize}>1.1MB</span>
-        </div>
       </div>
     </Card>
   );
@@ -96,9 +81,7 @@ const AppearanceSettings = () => {
           <div style={styles.avatarText}>点击上传背景图</div>
         </div>
       </div>
-      <button style={styles.uploadImageButton}>
-        上传背景图
-      </button>
+      {/* 上传背景图 按钮已移除，点击占位框上传 */}
     </Card>
   );
 };
@@ -108,7 +91,8 @@ const VoiceSettings = () => {
   const [selectedVoice, setSelectedVoice] = useState('帅气男声');
 
   return (
-    <Card title="🔊 默认声音" style={styles.voiceCard}>
+    <Card title="人物设定" style={styles.voiceCard}>
+      <DefaultsTabs />
       <div style={styles.selectContainer}>
         <select 
           value={selectedVoice} 
@@ -120,11 +104,6 @@ const VoiceSettings = () => {
           <option>可爱童声</option>
           <option>成熟男声</option>
         </select>
-      </div>
-      <div style={styles.voicePreview}>
-        <button style={styles.previewButton}>
-          ▶️ 试听声音
-        </button>
       </div>
     </Card>
   );
@@ -186,14 +165,9 @@ const EditAvatar = () => {
       <EditNavbar onBack={handleBack} />
       
       <div style={styles.content}>
-        {/* 左侧栏 - 模型选择和知识库 */}
-        <div style={styles.leftColumn}>
-          <ModelSelection />
-          <KnowledgeBase />
-        </div>
-
-        {/* 中间栏 - 形象和声音设置 */}
+        {/* 中间栏 - 知识库、形象和声音设置 */}
         <div style={styles.middleColumn}>
+          <KnowledgeBase />
           <AppearanceSettings />
           <VoiceSettings />
         </div>
@@ -210,7 +184,9 @@ const EditAvatar = () => {
 // 样式
 const styles = {
   container: {
-    padding: '24px',
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '20px',
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     backgroundColor: '#f5f7fa',
     minHeight: '100vh',
@@ -220,10 +196,11 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '24px',
-    padding: '16px 24px',
+    padding: '12px 20px',
     backgroundColor: '#fff',
     borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    position: 'relative',
   },
   navLeft: {
     display: 'flex',
@@ -258,34 +235,38 @@ const styles = {
   },
   content: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr',
-    gap: '20px',
-    alignItems: 'start',
+    gridTemplateColumns: '2fr 1fr',
+    gap: '16px',
+    alignItems: 'stretch',
   },
   leftColumn: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '8px',
   },
   middleColumn: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '8px',
+    alignItems: 'stretch',
+    flex: '1 1 auto',
   },
   rightColumn: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px',
+    gap: '8px',
+    alignItems: 'stretch',
+    flex: '1 1 auto',
   },
   card: {
     backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '12px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    padding: '14px',
+    borderRadius: '10px',
+    boxShadow: '0 1px 6px rgba(0,0,0,0.06)',
   },
   cardTitle: {
-    margin: '0 0 16px 0',
-    fontSize: '16px',
+    margin: '0 0 8px 0',
+    fontSize: '15px',
     fontWeight: '600',
     color: '#333',
   },
@@ -320,8 +301,48 @@ const styles = {
   },
   // 知识库卡片
   knowledgeCard: {
-    minHeight: '250px',
+    minHeight: '180px',
   },
+  defaultsRow: {
+    display: 'flex',
+    gap: '12px',
+    marginBottom: '12px',
+    alignItems: 'center',
+    width: '100%',
+  },
+  defaultTab: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    flex: '1 1 0',
+    },
+    defaultTab: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '6px',
+      flex: '0 0 auto',
+      alignItems: 'flex-start',
+    },
+  defaultLabel: {
+    fontSize: '12px',
+    color: '#666',
+    fontWeight: '600',
+  },
+  defaultSelect: {
+    padding: '8px 10px',
+    border: '1px solid #ddd',
+    borderRadius: '6px',
+    fontSize: '13px',
+    backgroundColor: '#fff',
+    },
+    defaultSelect: {
+      padding: '6px 8px',
+      border: '1px solid #ddd',
+      borderRadius: '6px',
+      fontSize: '13px',
+      backgroundColor: '#fff',
+      width: '140px',
+    },
   uploadArea: {
     border: '2px dashed #ddd',
     borderRadius: '8px',
@@ -358,7 +379,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '8px 12px',
+    padding: '6px 10px',
     backgroundColor: '#f8f9fa',
     borderRadius: '6px',
     fontSize: '13px',
@@ -373,14 +394,17 @@ const styles = {
   },
   // 形象设置卡片
   appearanceCard: {
-    minHeight: '250px',
-  },
+    minHeight: '180px',
+    },
+    appearanceCard: {
+      minHeight: '160px',
+    },
   avatarUpload: {
     marginBottom: '16px',
   },
   avatarPlaceholder: {
     width: '100%',
-    height: '120px',
+    height: '100px',
     border: '2px dashed #ddd',
     borderRadius: '8px',
     display: 'flex',
@@ -389,7 +413,19 @@ const styles = {
     alignItems: 'center',
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-  },
+    },
+    avatarPlaceholder: {
+      width: '100%',
+      height: '84px',
+      border: '2px dashed #ddd',
+      borderRadius: '8px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+    },
   avatarIcon: {
     fontSize: '24px',
     marginBottom: '8px',
@@ -398,57 +434,65 @@ const styles = {
     fontSize: '13px',
     color: '#666',
   },
-  uploadImageButton: {
-    width: '100%',
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    backgroundColor: '#fff',
-    cursor: 'pointer',
-    fontSize: '13px',
-    transition: 'all 0.2s ease',
-  },
+  // uploadImageButton removed
   // 声音设置卡片
   voiceCard: {
-    minHeight: '180px',
-  },
+    minHeight: '150px',
+    },
+    voiceCard: {
+      minHeight: '110px',
+    },
   voicePreview: {
-    marginTop: '12px',
+    marginTop: '8px',
   },
-  previewButton: {
-    width: '100%',
-    padding: '10px',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    backgroundColor: '#fff',
+  defaultVoiceText: {
+    color: '#1890ff',
     cursor: 'pointer',
-    fontSize: '13px',
-    transition: 'all 0.2s ease',
+    fontWeight: '600',
+    display: 'inline-block',
   },
   // 预览卡片
   previewCard: {
     height: 'fit-content',
-  },
+    minHeight: '220px',
+    },
+    previewCard: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      minHeight: '220px',
+      flex: '1 1 auto',
+    },
   previewArea: {
-    border: '1px solid #f0f0f0',
-    borderRadius: '8px',
-    overflow: 'hidden',
+      border: '1px solid #f0f0f0',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      flex: '1 1 auto',
   },
   previewHeader: {
-    padding: '12px 16px',
+    padding: '8px 12px',
     backgroundColor: '#f8f9fa',
     fontSize: '14px',
     fontWeight: '600',
     borderBottom: '1px solid #f0f0f0',
   },
   chatContainer: {
-    padding: '16px',
+    padding: '12px',
     backgroundColor: '#fafafa',
-    minHeight: '400px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px',
+    gap: '10px',
+    flex: '1 1 auto',
+    overflowY: 'auto',
   },
+    rightColumn: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '16px',
+      minHeight: 0,
+    },
   messageBubbleBot: {
     display: 'flex',
     alignItems: 'flex-start',
@@ -483,7 +527,7 @@ const styles = {
   debugInput: {
     display: 'flex',
     gap: '8px',
-    padding: '16px',
+    padding: '12px',
     borderTop: '1px solid #f0f0f0',
     backgroundColor: '#fff',
   },
@@ -550,18 +594,7 @@ Object.assign(styles, {
       backgroundColor: '#f8fbff',
     }
   },
-  uploadImageButton: {
-    ...styles.uploadImageButton,
-    ':hover': {
-      backgroundColor: '#f5f5f5',
-    }
-  },
-  previewButton: {
-    ...styles.previewButton,
-    ':hover': {
-      backgroundColor: '#f5f5f5',
-    }
-  },
+  
   sendButton: {
     ...styles.sendButton,
     ':hover': {

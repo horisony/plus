@@ -332,45 +332,6 @@ const CommercialDashboard = () => {
 
   return (
     <div style={styles.container}>
-      {/* 数据概览 */}
-      <div style={styles.section}>
-        <div style={styles.sectionHeader}>
-          <h2 style={styles.sectionTitle}>商业化概览</h2>
-        </div>
-        <div style={styles.statsGrid}>
-          <StatCard 
-            label="总合作品牌" 
-            value={stats ? stats.totalBrands.toLocaleString() : '0'}
-            trend={stats?.trends?.totalBrands}
-            loading={loading.stats}
-          />
-          <StatCard 
-            label="进行中项目" 
-            value={stats ? stats.activeProjects.toLocaleString() : '0'}
-            trend={stats?.trends?.activeProjects}
-            loading={loading.stats}
-          />
-          <StatCard 
-            label="已完成项目" 
-            value={stats ? stats.completedProjects.toLocaleString() : '0'}
-            trend={stats?.trends?.completedProjects}
-            loading={loading.stats}
-          />
-          <StatCard 
-            label="总预算金额" 
-            value={stats ? utils.formatCurrency(stats.totalBudget) : '¥ 0'}
-            trend={stats?.trends?.totalBudget}
-            loading={loading.stats}
-          />
-          <StatCard 
-            label="平均项目周期" 
-            value={stats ? `${stats.avgProjectCycle}天` : '0天'}
-            trend={stats?.trends?.avgProjectCycle}
-            loading={loading.stats}
-          />
-        </div>
-      </div>
-
       {/* 筛选栏 */}
       <FilterBar 
         filters={filters}
@@ -389,9 +350,6 @@ const CommercialDashboard = () => {
               <span style={styles.tableCount}>(共 {projects.length} 个项目)</span>
             )}
           </h3>
-          <button style={styles.primaryButton}>
-            ➕ 新建项目
-          </button>
         </div>
         
         <ProjectTable 

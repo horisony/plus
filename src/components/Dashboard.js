@@ -17,21 +17,25 @@ const WarningCard = ({ type, count, data }) => (
   }}>
     <div style={styles.warningHeader}>
       <h3 style={styles.warningTitle}>
-        {type === 'low' ? '😔 情绪低预警达人' : '😄 情绪高预警达人'} ({count})
+        <a
+          href={type === 'low' ? '/warnings/low' : '/warnings/high'}
+          style={styles.linkInvisible}
+        >
+          {type === 'low' ? '情绪低预警达人' : '情绪高预警达人'} ({count})
+        </a>
       </h3>
     </div>
     <div style={styles.warningList}>
       {data.map((item, index) => (
         <div key={index} style={styles.avatarItem}>
           <div style={styles.avatarWrapper}>
-            <img src="plusco.png" alt="avatar" style={styles.avatar} />
+            <img src="/PLUSCO-LOGO.jpg" alt="avatar" style={styles.avatar} />
             <div style={styles.onlineIndicator}></div>
           </div>
           <div style={styles.userInfo}>
             <span style={styles.userName}>{item.name}</span>
             <span style={styles.userMessage}>{item.message}</span>
           </div>
-          <div style={styles.timeBadge}>刚刚</div>
         </div>
       ))}
     </div>
@@ -136,7 +140,7 @@ const Dashboard = ({ onEditAvatar }) => {
             ))}
           </div>
           <button onClick={onEditAvatar} style={styles.editButton}>
-            ✏️ 编辑我的分身
+            编辑我的分身
           </button>
         </div>
       </div>
@@ -206,17 +210,17 @@ const styles = {
     color: '#666',
   },
   editButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: '#1890ff',
     color: '#fff',
     border: 'none',
-    padding: '12px 24px',
-    fontSize: '14px',
+    padding: '8px 16px',
+    fontSize: '13px',
     borderRadius: '6px',
     cursor: 'pointer',
     fontWeight: '600',
-    boxShadow: '0 2px 4px rgba(244, 67, 54, 0.3)',
-    transition: 'all 0.2s ease',
-    marginLeft: '20px',
+    boxShadow: '0 2px 4px rgba(24, 144, 255, 0.2)',
+    transition: 'all 0.15s ease',
+    marginLeft: '12px',
     whiteSpace: 'nowrap',
   },
   
@@ -224,8 +228,10 @@ const styles = {
   horizontalRow: {
     display: 'flex',
     flexDirection: 'row',
-    gap: '24px',
-    marginBottom: '24px',
+    gap: '12px',
+    marginBottom: '16px',
+    alignItems: 'stretch',
+    flexWrap: 'wrap',
   },
   
   // 预警卡片样式
@@ -235,7 +241,9 @@ const styles = {
     padding: '20px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
     flex: 1,
-    minHeight: '300px',
+    minHeight: 'auto',
+    display: 'flex',
+    flexDirection: 'column',
   },
   lowWarning: {
     borderLeft: '4px solid #ff4d4f',
@@ -245,33 +253,55 @@ const styles = {
   },
   warningHeader: {
     marginBottom: '16px',
+    display: 'flex',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   warningTitle: {
     margin: 0,
     fontSize: '16px',
     fontWeight: '600',
+    textAlign: 'left',
+  },
+  linkInvisible: {
+    color: 'inherit',
+    textDecoration: 'none',
+    display: 'inline-block',
+    width: '100%'
   },
   warningList: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
     gap: '12px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'nowrap',
+    flex: '1 1 auto',
+    overflowY: 'auto',
   },
   avatarItem: {
     display: 'flex',
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: '12px',
-    padding: '12px',
+    gap: '8px',
+    padding: '8px',
     borderRadius: '8px',
-    backgroundColor: '#f8f9fa',
+  backgroundColor: '#ffffff',
+  border: 'none',
     transition: 'background-color 0.2s ease',
+    flex: '1 1 0',
+    minWidth: '0',
   },
   avatarWrapper: {
     position: 'relative',
+    flex: '0 0 auto',
   },
   avatar: {
-    width: '40px',
-    height: '40px',
+    width: '48px',
+    height: '48px',
     borderRadius: '50%',
+    objectFit: 'cover',
+    border: '1px solid rgba(0,0,0,0.06)',
   },
   onlineIndicator: {
     position: 'absolute',
@@ -286,7 +316,10 @@ const styles = {
   userInfo: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    flex: '1 1 0',
+    maxWidth: 'none',
   },
   userName: {
     fontSize: '14px',
@@ -297,22 +330,24 @@ const styles = {
     fontSize: '12px',
     color: '#666',
   },
-  timeBadge: {
+  timeBadge:{
     fontSize: '11px',
     color: '#999',
     backgroundColor: '#f0f0f0',
     padding: '2px 6px',
     borderRadius: '10px',
-  },
+  } ,
   
   // 话题标签区域
   topicSection: {
     backgroundColor: '#fff',
     padding: '20px',
-    borderRadius: '12px',
+    borderRadius: '8px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
     flex: 1,
     minHeight: '250px',
+    display: 'flex',
+    flexDirection: 'column',
   },
   topicTitle: {
     margin: '0 0 16px 0',
@@ -372,9 +407,9 @@ Object.assign(styles, {
   editButton: {
     ...styles.editButton,
     ':hover': {
-      backgroundColor: '#d32f2f',
+      backgroundColor: '#147ad6',
       transform: 'translateY(-1px)',
-      boxShadow: '0 4px 8px rgba(244, 67, 54, 0.4)',
+      boxShadow: '0 6px 12px rgba(20, 122, 214, 0.18)',
     }
   },
   circularTagItem: {
