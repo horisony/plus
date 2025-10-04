@@ -22,13 +22,15 @@ const WarningCardDetail = ({ type: propType }) => {
 
   const counts = useMemo(() => ({ low: lowData.length, high: highData.length, total: lowData.length + highData.length }), []);
 
-  const [query, setQuery] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
+  const [keywordFilter, setKeywordFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
   const switchTab = (tab) => {
     setActiveTab(tab);
-    setQuery('');
+    setBrandFilter('');
+    setKeywordFilter('');
     setPage(1);
     navigate(`/warnings/${tab}`);
   };
@@ -36,15 +38,22 @@ const WarningCardDetail = ({ type: propType }) => {
   const activeData = activeTab === 'high' ? highData : lowData;
   // filtered and paginated
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return activeData;
-    return activeData.filter(item => (
-      (item.name || '').toLowerCase().includes(q) ||
-      (item.brand || '').toLowerCase().includes(q) ||
-      (item.message || '').toLowerCase().includes(q) ||
-      (item.suggestion || '').toLowerCase().includes(q)
-    ));
-  }, [activeData, query]);
+    const b = (brandFilter || '').trim().toLowerCase();
+    const k = (keywordFilter || '').trim().toLowerCase();
+
+    return activeData.filter(item => {
+      if (b) {
+        if (!((item.brand || '').toLowerCase().includes(b))) return false;
+      }
+      if (k) {
+        const match = (item.name || '').toLowerCase().includes(k)
+          || (item.message || '').toLowerCase().includes(k)
+          || (item.suggestion || '').toLowerCase().includes(k);
+        if (!match) return false;
+      }
+      return true;
+    });
+  }, [activeData, brandFilter, keywordFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageData = filtered.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
@@ -75,12 +84,28 @@ const WarningCardDetail = ({ type: propType }) => {
       </div>
 
       <div style={styles.tableControls}>
-        <input
-          placeholder="搜索达人 / 品牌 / 关键词"
-          value={query}
-          onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-          style={styles.searchInput}
-        />
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: '1 1 auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>品牌</label>
+            <input
+              placeholder="输入品牌名"
+              value={brandFilter}
+              onChange={(e) => { setBrandFilter(e.target.value); setPage(1); }}
+              style={{ ...styles.searchInput, width: 220 }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <label style={{ fontSize: 12, color: '#666', marginBottom: 6 }}>关键词</label>
+            <input
+              placeholder="达人名 / 预警 / 建议"
+              value={keywordFilter}
+              onChange={(e) => { setKeywordFilter(e.target.value); setPage(1); }}
+              style={{ ...styles.searchInput, width: 320 }}
+            />
+          </div>
+        </div>
+
         <div style={styles.pageSizeWrap}>
           <label style={{ marginRight: 8 }}>每页</label>
           <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} style={styles.pageSizeSelect}>
