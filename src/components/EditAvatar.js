@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // 顶部导航栏组件
 const EditNavbar = ({ onBack }) => {
@@ -156,9 +157,8 @@ const PreviewAndDebug = () => {
 
 // 主组件
 const EditAvatar = () => {
-  const handleBack = () => {
-    window.location.href = '/dashboard';
-  };
+  const navigate = useNavigate();
+  const handleBack = () => navigate(-1);
 
   return (
     <div style={styles.container}>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 // 统计卡片组件
 const StatCard = ({ label, value, children }) => (
@@ -10,19 +11,16 @@ const StatCard = ({ label, value, children }) => (
 );
 
 // 预警达人卡片组件
-const WarningCard = ({ type, count, data }) => (
+const WarningCard = ({ type, count, data, onOpenWarningDetail }) => (
   <div style={{
     ...styles.warningCard,
     ...(type === 'low' ? styles.lowWarning : styles.highWarning)
   }}>
     <div style={styles.warningHeader}>
       <h3 style={styles.warningTitle}>
-        <a
-          href={type === 'low' ? '/warnings/low' : '/warnings/high'}
-          style={styles.linkInvisible}
-        >
+        <Link to={type === 'low' ? '/warnings/low' : '/warnings/high'} style={styles.linkInvisible}>
           {type === 'low' ? '情绪低预警达人' : '情绪高预警达人'} ({count})
-        </a>
+        </Link>
       </h3>
     </div>
     <div style={styles.warningList}>
@@ -104,7 +102,8 @@ const TopicSection = ({ type, tags }) => {
 };
 
 // 主组件
-const Dashboard = ({ onEditAvatar }) => {
+const Dashboard = () => {
+  const navigate = useNavigate();
   // 模拟数据
   const lowWarningData = [
     { name: '萌叔', message: '直播怎么做起来呢' },
@@ -139,7 +138,7 @@ const Dashboard = ({ onEditAvatar }) => {
               <StatCard key={index} label={stat.label} value={stat.value} />
             ))}
           </div>
-          <button onClick={onEditAvatar} style={styles.editButton}>
+          <button onClick={() => navigate('/edit-avatar')} style={styles.editButton}>
             编辑我的分身
           </button>
         </div>
