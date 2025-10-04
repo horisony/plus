@@ -102,7 +102,7 @@ const TopicSection = ({ type, tags }) => {
 };
 
 // 主组件
-const Dashboard = () => {
+const AIAgent = () => {
   const navigate = useNavigate();
   // 模拟数据
   const lowWarningData = [
@@ -421,4 +421,4 @@ Object.assign(styles, {
   },
 });
 
-export default Dashboard;
+export default AIAgent;

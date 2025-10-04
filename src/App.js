@@ -1,37 +1,34 @@
 import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import Dashboard from './components/Dashboard';
-import EditAvatar from './components/EditAvatar';
-import CommercialDashboard from './components/CommercialDashboard';
-import TopNavbar from './components/TopNavbar';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import AIAgent from './features/ai-agent/AIAgent';
+import EditAvatar from './features/ai-agent/EditAvatar';
+import WarningCardDetail from './features/ai-agent/WarningCardDetail';
+import CommercialDashboard from './features/commercial/CommercialDashboard';
+import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
 import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('dashboard');
   const [activeTab, setActiveTab] = useState('data');
   const [userInfo, setUserInfo] = useState({
     name: '管理员',
     email: 'admin@plusco.com',
     avatar: null
   });
+  const navigate = useNavigate();
 
-  // 处理标签切换
+  // 处理标签切换（使用路由）
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
-    
     const pageMap = {
-      'data': 'dataAnalytics',
-      'content': 'contentOps', 
-      'commercial': 'commercial',
-      'ai': 'dashboard'
+      data: '/data',
+      content: '/content',
+      commercial: '/commercial',
+      ai: '/ai',
     };
-    
-    if (pageMap[tabKey]) {
-      setCurrentPage(pageMap[tabKey]);
-    }
+    const path = pageMap[tabKey] || '/';
+    navigate(path);
   };
 
   // 用户操作函数
@@ -48,35 +45,7 @@ function App() {
     console.log('跳转到个人资料页面');
   };
 
-  // 渲染页面内容（不包含导航栏）
-  const renderPageContent = () => {
-    switch (currentPage) {
-      case 'dataAnalytics':
-        return <DataAnalyticsApp />;
-      case 'dashboard':
-        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
-      case 'commercial':
-        return <CommercialDashboard />;
-      case 'contentOps':
-        return <ContentOpsPage />;
-      case 'editAvatar':
-        return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
-      default:
-        return <DataAnalyticsApp />;
-    }
-  };
-
-  // 当 URL 变化时，同步 currentPage（保持向后兼容的基于 currentPage 的渲染方式）
-  const location = useLocation();
-  useEffect(() => {
-    const p = location.pathname || '/';
-    if (p === '/' || p === '') setCurrentPage('dashboard');
-    else if (p.startsWith('/commercial')) setCurrentPage('commercial');
-    else if (p.startsWith('/edit-avatar')) setCurrentPage('editAvatar');
-    else if (p.startsWith('/warnings')) setCurrentPage('dashboard');
-    else if (p.startsWith('/content')) setCurrentPage('contentOps');
-    else if (p.startsWith('/data') || p.startsWith('/data-analytics')) setCurrentPage('dataAnalytics');
-  }, [location.pathname]);
+  // 使用 react-router 的路由表来渲染页面
 
   return (
     <div className="App">
@@ -92,7 +61,15 @@ function App() {
       
       {/* 页面内容区域 */}
       <div style={styles.content}>
-        {renderPageContent()}
+        <Routes>
+          <Route path="/" element={<DataAnalyticsApp />} />
+          <Route path="/ai" element={<AIAgent onEditAvatar={() => navigate('/edit-avatar')} />} />
+          <Route path="/commercial" element={<CommercialDashboard />} />
+          <Route path="/edit-avatar" element={<EditAvatar />} />
+          <Route path="/warnings/:type" element={<WarningCardDetail />} />
+          <Route path="/content" element={<ContentOpsPage />} />
+          <Route path="/data" element={<DataAnalyticsApp />} />
+        </Routes>
       </div>
     </div>
   );
