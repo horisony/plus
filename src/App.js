@@ -3,11 +3,13 @@ import Dashboard from './components/Dashboard';
 import EditAvatar from './components/EditAvatar';
 import CommercialDashboard from './components/CommercialDashboard';
 import TopNavbar from './components/TopNavbar';
+import { ContentOpsPage } from './features/content-ops';
+import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [activeTab, setActiveTab] = useState('ai');
+  const [activeTab, setActiveTab] = useState('data');
   const [userInfo, setUserInfo] = useState({
     name: '管理员',
     email: 'admin@plusco.com',
@@ -19,8 +21,8 @@ function App() {
     setActiveTab(tabKey);
     
     const pageMap = {
-      'talent': 'dashboard',
-      'content': 'dashboard', 
+      'data': 'dataAnalytics',
+      'content': 'contentOps', 
       'commercial': 'commercial',
       'ai': 'dashboard'
     };
@@ -47,14 +49,18 @@ function App() {
   // 渲染页面内容（不包含导航栏）
   const renderPageContent = () => {
     switch (currentPage) {
+      case 'dataAnalytics':
+        return <DataAnalyticsApp />;
       case 'dashboard':
         return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
       case 'commercial':
         return <CommercialDashboard />;
+      case 'contentOps':
+        return <ContentOpsPage />;
       case 'editAvatar':
         return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
       default:
-        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
+        return <DataAnalyticsApp />;
     }
   };
 
