@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { AiOutlinePaperClip, AiOutlinePicture, AiOutlineVideoCamera, AiOutlineSend, AiOutlinePause, AiOutlineCaretRight } from 'react-icons/ai';
 import { designTokens } from '../constants/designTokens';
 import copy from '../constants/copy.zh-CN.json';
 
@@ -58,13 +57,13 @@ const ContentInputPanel = ({ onSendMessage, isGenerating, onStop }) => {
         <div style={styles.toolbar}>
           <div style={styles.toolbarLeft}>
             <button style={styles.toolButton} aria-label="附件">
-              <AiOutlinePaperClip />
+              📎
             </button>
             <button style={styles.toolButton} aria-label="图片">
-              <AiOutlinePicture />
+              🖼️
             </button>
             <button style={styles.toolButton} aria-label="视频">
-              <AiOutlineVideoCamera />
+              🎥
             </button>
           </div>
           
@@ -75,7 +74,7 @@ const ContentInputPanel = ({ onSendMessage, isGenerating, onStop }) => {
               disabled={!message.trim() && !isGenerating}
               aria-label="发送"
             >
-              {isGenerating ? <span style={{width: 12, height: 12, background: '#111', display: 'block', borderRadius: 2}} /> : <AiOutlineSend />}
+              {isGenerating ? <span style={{width: 12, height: 12, background: '#111', display: 'block', borderRadius: 2}} /> : '➤'}
             </button>
           </div>
         </div>

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Dashboard from './components/Dashboard';
 import EditAvatar from './components/EditAvatar';
 import CommercialDashboard from './components/CommercialDashboard';
 import TopNavbar from './components/TopNavbar';
-import WarningCardDetail from './components/WarningCardDetail';
 import { ContentOpsPage } from './features/content-ops';
 import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
 function App() {
+  const [currentPage, setCurrentPage] = useState('dashboard');
   const [activeTab, setActiveTab] = useState('data');
   const [userInfo, setUserInfo] = useState({
     name: '管理员',
@@ -17,18 +18,20 @@ function App() {
     avatar: null
   });
 
-  const navigate = useNavigate();
-
-  // 处理标签切换（现在通过路由跳转）
+  // 处理标签切换
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
+    
     const pageMap = {
       'data': 'dataAnalytics',
       'content': 'contentOps', 
       'commercial': 'commercial',
       'ai': 'dashboard'
     };
-    if (pageMap[tabKey]) navigate(pageMap[tabKey]);
+    
+    if (pageMap[tabKey]) {
+      setCurrentPage(pageMap[tabKey]);
+    }
   };
 
   // 用户操作函数
@@ -63,8 +66,21 @@ function App() {
     }
   };
 
+  // 当 URL 变化时，同步 currentPage（保持向后兼容的基于 currentPage 的渲染方式）
+  const location = useLocation();
+  useEffect(() => {
+    const p = location.pathname || '/';
+    if (p === '/' || p === '') setCurrentPage('dashboard');
+    else if (p.startsWith('/commercial')) setCurrentPage('commercial');
+    else if (p.startsWith('/edit-avatar')) setCurrentPage('editAvatar');
+    else if (p.startsWith('/warnings')) setCurrentPage('dashboard');
+    else if (p.startsWith('/content')) setCurrentPage('contentOps');
+    else if (p.startsWith('/data') || p.startsWith('/data-analytics')) setCurrentPage('dataAnalytics');
+  }, [location.pathname]);
+
   return (
     <div className="App">
+      {/* TopNavbar 放在 App.js 中，统一管理 */}
       <TopNavbar 
         activeTab={activeTab}
         onTabChange={handleTabChange}
@@ -73,14 +89,10 @@ function App() {
         onLogout={handleLogout}
         onProfile={handleProfile}
       />
-
+      
+      {/* 页面内容区域 */}
       <div style={styles.content}>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/commercial" element={<CommercialDashboard />} />
-          <Route path="/edit-avatar" element={<EditAvatar />} />
-          <Route path="/warnings/:type" element={<WarningCardDetail />} />
-        </Routes>
+        {renderPageContent()}
       </div>
     </div>
   );
@@ -90,7 +102,7 @@ const styles = {
   content: {
     padding: '24px',
     backgroundColor: '#f5f7fa',
-    minHeight: 'calc(100vh - 80px)',
+    minHeight: 'calc(100vh - 80px)', // 减去导航栏高度
   }
 };
 
