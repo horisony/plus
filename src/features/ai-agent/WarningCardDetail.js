@@ -23,6 +23,7 @@ const WarningCardDetail = ({ type: propType }) => {
   const counts = useMemo(() => ({ low: lowData.length, high: highData.length, total: lowData.length + highData.length }), []);
 
   const [brandFilter, setBrandFilter] = useState('');
+  const [influencerFilter, setInfluencerFilter] = useState('');
   const [keywordFilter, setKeywordFilter] = useState('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
@@ -30,6 +31,7 @@ const WarningCardDetail = ({ type: propType }) => {
   const switchTab = (tab) => {
     setActiveTab(tab);
     setBrandFilter('');
+    setInfluencerFilter('');
     setKeywordFilter('');
     setPage(1);
     navigate(`/warnings/${tab}`);
@@ -39,21 +41,24 @@ const WarningCardDetail = ({ type: propType }) => {
   // filtered and paginated
   const filtered = useMemo(() => {
     const b = (brandFilter || '').trim().toLowerCase();
+    const i = (influencerFilter || '').trim().toLowerCase();
     const k = (keywordFilter || '').trim().toLowerCase();
 
     return activeData.filter(item => {
       if (b) {
         if (!((item.brand || '').toLowerCase().includes(b))) return false;
       }
+      if (i) {
+        if (!((item.name || '').toLowerCase().includes(i))) return false;
+      }
       if (k) {
-        const match = (item.name || '').toLowerCase().includes(k)
-          || (item.message || '').toLowerCase().includes(k)
+        const match = (item.message || '').toLowerCase().includes(k)
           || (item.suggestion || '').toLowerCase().includes(k);
         if (!match) return false;
       }
       return true;
     });
-  }, [activeData, brandFilter, keywordFilter]);
+  }, [activeData, brandFilter, influencerFilter, keywordFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const pageData = filtered.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize);
@@ -61,56 +66,76 @@ const WarningCardDetail = ({ type: propType }) => {
 
   return (
     <div style={styles.page}>
-      <div style={styles.headerRow}>
-        <div style={styles.leftHeader}>
-          <button onClick={() => navigate('/')} style={styles.back}>← 返回</button>
-        </div>
-        <div style={styles.rightHeader}>
-          <div style={styles.tabBar}>
-            <button
-              onClick={() => switchTab('low')}
-              style={{ ...styles.tabButton, ...(activeTab === 'low' ? styles.tabActive : {}) }}
-            >
-              情绪低预警达人 ({counts.low})
-            </button>
-            <button
-              onClick={() => switchTab('high')}
-              style={{ ...styles.tabButton, ...(activeTab === 'high' ? styles.tabActive : {}) }}
-            >
-              情绪高预警达人 ({counts.high})
-            </button>
+      <div style={styles.headerCard}>
+        <div style={styles.headerInner}>
+          <div style={styles.leftHeader}>
+            <button onClick={() => navigate('/')} style={styles.back}>← 返回</button>
+            <div style={styles.pageTitle}>{title}</div>
+          </div>
+
+          <div style={styles.rightHeader}>
+            <div style={styles.tabBar}>
+              <button
+                onClick={() => switchTab('low')}
+                style={{ ...styles.tabButton, ...(activeTab === 'low' ? styles.tabActive : {}) }}
+              >
+                情绪低预警达人 ({counts.low})
+              </button>
+              <button
+                onClick={() => switchTab('high')}
+                style={{ ...styles.tabButton, ...(activeTab === 'high' ? styles.tabActive : {}) }}
+              >
+                情绪高预警达人 ({counts.high})
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <div style={styles.tableControls}>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flex: '1 1 auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <div style={styles.controlsCard}>
+        <div style={styles.filterRow}>
+          <div style={styles.filterItem}>
+            <div style={styles.filterLabel}>品牌</div>
             <input
               placeholder="输入品牌名"
               value={brandFilter}
               onChange={(e) => { setBrandFilter(e.target.value); setPage(1); }}
-              style={{ ...styles.searchInput, width: 160 }}
+              style={styles.smallInput}
             />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={styles.filterItem}>
+            <div style={styles.filterLabel}>达人</div>
             <input
-              placeholder="达人名 / 预警 / 建议"
+                          placeholder="输入达人名"
+              value={influencerFilter}
+              onChange={(e) => { setInfluencerFilter(e.target.value); setPage(1); }}
+              style={styles.smallInput}
+            />
+          </div>
+
+          <div style={styles.filterItem}>
+            <div style={styles.filterLabel}>关键词</div>
+            <input
+              placeholder="预警 / 建议"
               value={keywordFilter}
               onChange={(e) => { setKeywordFilter(e.target.value); setPage(1); }}
-              style={{ ...styles.searchInput, width: 240 }}
+              style={styles.searchInput}
             />
           </div>
-        </div>
 
-        <div style={styles.pageSizeWrap}>
-          <label style={{ marginRight: 8 }}>每页</label>
-          <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} style={styles.pageSizeSelect}>
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
+          <div style={styles.filterItem}>
+            <div style={styles.filterLabel}>每页</div>
+            <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} style={styles.pageSizeSelect}>
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: '#666', fontSize: 13 }}>
+            共 {filtered.length} 条结果
+          </div>
         </div>
       </div>
 
@@ -250,7 +275,7 @@ const styles = {
   },
   tableHeaderRow: {
     display: 'grid',
-    gridTemplateColumns: '1.2fr 1fr 2fr 1.5fr 0.6fr',
+    gridTemplateColumns: '1fr 0.9fr 1.4fr 1.6fr 0.6fr',
     backgroundColor: '#f8f9fa',
     borderBottom: '1px solid #e5e5e5',
   },
@@ -263,16 +288,17 @@ const styles = {
   },
   tableBodyRow: {
     display: 'grid',
-    gridTemplateColumns: '1.2fr 1fr 2fr 1.5fr 0.6fr',
+    gridTemplateColumns: '1fr 0.9fr 1.4fr 1.6fr 0.6fr',
     borderBottom: '1px solid #f3f4f6',
   },
   tableCell: {
-    padding: '12px 16px',
+    padding: '10px 12px',
     fontSize: '14px',
     color: '#666',
     display: 'flex',
     alignItems: 'center',
     minHeight: '64px',
+    wordBreak: 'break-word',
   },
   tableRow: {
     display: 'flex',
@@ -292,12 +318,30 @@ const styles = {
     padding: '6px 10px',
     borderRadius: '6px',
     cursor: 'pointer',
+    whiteSpace: 'nowrap',
   },
   avatarImg: {
-    width: '40px',
-    height: '40px',
+    width: '36px',
+    height: '36px',
     borderRadius: '50%',
     objectFit: 'cover',
+  },
+  headerCard: {
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    padding: '12px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+    marginBottom: '12px',
+  },
+  headerInner: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  pageTitle: {
+    fontSize: '16px',
+    fontWeight: 700,
+    marginLeft: '12px',
   },
   nameBlock: {
     display: 'flex',
@@ -310,6 +354,36 @@ const styles = {
     alignItems: 'center',
     marginTop: '12px',
     gap: '12px',
+  },
+  controlsCard: {
+    backgroundColor: '#fff',
+    padding: '12px',
+    borderRadius: '8px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+    marginTop: '12px',
+  },
+  filterRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    flexWrap: 'wrap',
+  },
+  filterItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  filterLabel: {
+    fontSize: '13px',
+    color: '#374151',
+    whiteSpace: 'nowrap',
+  },
+  smallInput: {
+    padding: '6px 10px',
+    border: '1px solid #d1d5db',
+    borderRadius: '6px',
+    fontSize: '14px',
+    minWidth: '140px',
   },
   searchInput: {
     flex: '0 0 auto',
