@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { getCurrentUserId } from '../../utils/api';
 
 // 统计卡片组件
 const StatCard = ({ label, value, children }) => (
@@ -138,7 +139,14 @@ const AIAgent = () => {
               <StatCard key={index} label={stat.label} value={stat.value} />
             ))}
           </div>
-          <button onClick={() => navigate('/edit-avatar')} style={styles.editButton}>
+          <button onClick={() => {
+            console.log('=== 点击了编辑我的分身按钮 ===');
+            // 获取当前用户ID
+            const userId = getCurrentUserId();
+            console.log('准备导航到 EditAvatar，userId:', userId);
+            navigate(`/edit-avatar/${userId}`);
+            console.log('navigate 调用完成');
+          }} style={styles.editButton}>
             编辑我的分身
           </button>
         </div>

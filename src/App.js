@@ -7,6 +7,7 @@ import CommercialDashboard from './features/commercial/CommercialDashboard';
 import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
 import { DataAnalyticsApp } from './features/data-analytics';
+import TestApi from './TestApi';
 import './App.css';
 
 function App() {
@@ -63,12 +64,13 @@ function App() {
       <div style={styles.content}>
         <Routes>
           <Route path="/" element={<DataAnalyticsApp />} />
-          <Route path="/ai" element={<AIAgent onEditAvatar={() => navigate('/edit-avatar')} />} />
+          <Route path="/ai" element={<AIAgent />} />
           <Route path="/commercial" element={<CommercialDashboard />} />
-          <Route path="/edit-avatar" element={<EditAvatar />} />
+          <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
           <Route path="/warnings/:type" element={<WarningCardDetail />} />
           <Route path="/content" element={<ContentOpsPage />} />
           <Route path="/data" element={<DataAnalyticsApp />} />
+          <Route path="/test-api" element={<TestApi />} />
         </Routes>
       </div>
     </div>
