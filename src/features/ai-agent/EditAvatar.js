@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { fetchAgentData, updateAgentData } from '../../utils/api';
 import './EditAvatar.css';
 
 // 顶部导航栏组件
@@ -204,43 +203,184 @@ const VoiceSettings = ({ agentData, onVoiceChange, onAgeChange, onGenderChange }
 };
 
 // 预览与调试组件
-const PreviewAndDebug = () => {
+const PreviewAndDebug = ({ agentData, userId }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [conversationContext, setConversationContext] = useState([]);
+  const chatContainerRef = useRef(null);
 
   // initialize with a single AI greeting when component mounts
   useEffect(() => {
-    setMessages([{ from: 'ai', text: '你好呀，我是你的AI经纪人' }]);
+    setMessages([{ 
+      from: 'ai', 
+      text: '你好呀，我是你的AI助手，现在你可以和我对话了！',
+      timestamp: new Date().toISOString()
+    }]);
   }, []);
 
-  const handleSend = () => {
+  // 自动滚动到底部
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // 调用聊天API
+  const callChatAPI = async (userMessage) => {
+    try {
+      // 构建请求体，参考md文档
+      const requestBody = {
+        agent_id: userId || "test-agent-123", // 使用userId作为agent_id
+        message: userMessage,
+        conversation_context: conversationContext,
+        stream: false,
+        temperature: 0.8,
+        max_tokens: 1500
+      };
+
+      console.log('发送聊天请求:', requestBody);
+
+      const response = await fetch('/api/api/v1/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-ID': userId || 'test-user-123'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      const result = await response.json();
+      console.log('聊天API响应:', result);
+
+      if (result.success && result.data) {
+        // 更新对话上下文
+        if (result.data.conversation_context) {
+          setConversationContext(result.data.conversation_context);
+        }
+        
+        return result.data.response.content;
+      } else {
+        console.error('聊天API错误:', result);
+        return '抱歉，我现在无法回复，请稍后再试。';
+      }
+    } catch (error) {
+      console.error('聊天请求失败:', error);
+      return '网络连接出现问题，请检查连接后重试。';
+    }
+  };
+
+  const handleSend = async () => {
     const txt = (input || '').trim();
-    if (!txt) return;
-    setMessages(prev => [...prev, { from: 'user', text: txt }]);
+    if (!txt || isLoading) return;
+    
+    // 添加用户消息
+    const userMessage = {
+      from: 'user', 
+      text: txt,
+      timestamp: new Date().toISOString()
+    };
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setIsLoading(true);
+
+    // 更新对话上下文
+    setConversationContext(prev => [...prev, {
+      role: 'user',
+      content: txt,
+      timestamp: new Date().toISOString()
+    }]);
+
+    try {
+      // 调用API获取AI回复
+      const aiResponse = await callChatAPI(txt);
+      
+      // 添加AI回复
+      const aiMessage = {
+        from: 'ai',
+        text: aiResponse,
+        timestamp: new Date().toISOString()
+      };
+      setMessages(prev => [...prev, aiMessage]);
+
+      // 更新对话上下文
+      setConversationContext(prev => [...prev, {
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: new Date().toISOString()
+      }]);
+
+    } catch (error) {
+      console.error('处理AI回复时出错:', error);
+      setMessages(prev => [...prev, {
+        from: 'ai',
+        text: '抱歉，处理你的消息时出现了错误。',
+        timestamp: new Date().toISOString()
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Card title="🔍 预设与调试" className="ea-preview-card">
+    <Card title="� AI对话测试" className="ea-preview-card">
       <div className="ea-preview-area">
-        <div className="ea-preview-header">对话预览</div>
-        <div className="ea-chat-container">
+        <div className="ea-preview-header">
+          实时对话预览 
+          {isLoading && <span style={{marginLeft: '10px', color: '#666', fontSize: '12px'}}>AI思考中...</span>}
+        </div>
+        <div 
+          ref={chatContainerRef}
+          className="ea-chat-container" 
+          style={{maxHeight: '400px', overflowY: 'auto', scrollBehavior: 'smooth'}}
+        >
           {messages.map((m, idx) => (
             <div key={idx} className={m.from === 'ai' ? 'ea-message-bubble-bot' : 'ea-message-bubble-user'}>
               <div className="ea-message-content">{m.text}</div>
+              {m.timestamp && (
+                <div style={{fontSize: '10px', color: '#999', marginTop: '4px'}}>
+                  {new Date(m.timestamp).toLocaleTimeString()}
+                </div>
+              )}
             </div>
           ))}
+          {isLoading && (
+            <div className="ea-message-bubble-bot">
+              <div className="ea-message-content" style={{fontStyle: 'italic', color: '#666'}}>
+                正在思考...
+              </div>
+            </div>
+          )}
         </div>
         <div className="ea-debug-input">
           <input
             type="text"
-            placeholder="输入测试消息..."
+            placeholder={isLoading ? "AI正在回复中..." : "输入消息和AI对话..."}
             className="ea-input"
             value={input}
+            disabled={isLoading}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSend(); } }}
+            onKeyDown={(e) => { 
+              if (e.key === 'Enter' && !e.shiftKey) { 
+                e.preventDefault(); 
+                handleSend(); 
+              } 
+            }}
           />
-          <button className="ea-send-button" onClick={handleSend}>发送</button>
+          <button 
+            className="ea-send-button" 
+            onClick={handleSend}
+            disabled={isLoading || !input.trim()}
+            style={{
+              opacity: (isLoading || !input.trim()) ? 0.5 : 1,
+              cursor: (isLoading || !input.trim()) ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isLoading ? '发送中...' : '发送'}
+          </button>
+        </div>
+        <div style={{fontSize: '12px', color: '#666', marginTop: '8px', textAlign: 'center'}}>
+          使用 Agent ID: {userId || 'test-agent-123'} | 共 {messages.length} 条消息
         </div>
       </div>
     </Card>
@@ -248,15 +388,11 @@ const PreviewAndDebug = () => {
 };
 
 // 主组件
-const EditAvatar = () => {
-  console.log('=== EditAvatar 组件开始渲染 ===');
-  
+const EditAvatar = () => {  
   const navigate = useNavigate();
   const { userId } = useParams();
   
-  console.log('从路由获取的 userId:', userId);
-  console.log('当前页面 URL:', window.location.href);
-  
+  console.log('从路由获取的 userId:', userId);  
   const [agentData, setAgentData] = useState({
     age: '26-35',
     gender: 'male',
@@ -271,16 +407,14 @@ const EditAvatar = () => {
 
   // 尝试加载后端数据，失败则使用默认值
   const loadAgentData = async () => {
-    console.log('=== 直接访问后端API ===');
-    console.log('userId:', userId);
     try {
-      const apiUrl = `/api/v1/agents/${userId}`;
+      const apiUrl = `/api/api/v1/agents/${userId}`;
       console.log('请求URL:', apiUrl);
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'X-User-ID': userId, // 使用路由参数中的userId作为当前用户ID
+          'X-User-ID': userId,
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
           'Expires': '0'
@@ -288,9 +422,7 @@ const EditAvatar = () => {
         cache: 'no-store'
       });
       console.log('发送的请求头 X-User-ID:', userId);
-      console.log('API响应状态:', response.status);
-      console.log('API响应URL:', response.url);
-      console.log('API响应headers:', Object.fromEntries(response.headers.entries()));
+
       // 检查响应类型
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
@@ -359,7 +491,7 @@ const EditAvatar = () => {
 
         {/* 右侧栏 - 预设与调试 */}
         <div className="ea-right-column">
-          <PreviewAndDebug />
+          <PreviewAndDebug agentData={agentData} userId={userId} />
         </div>
       </div>
     </div>

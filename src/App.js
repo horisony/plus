@@ -7,7 +7,6 @@ import CommercialDashboard from './features/commercial/CommercialDashboard';
 import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
 import { DataAnalyticsApp } from './features/data-analytics';
-import TestApi from './TestApi';
 import './App.css';
 
 function App() {
@@ -70,7 +69,6 @@ function App() {
           <Route path="/warnings/:type" element={<WarningCardDetail />} />
           <Route path="/content" element={<ContentOpsPage />} />
           <Route path="/data" element={<DataAnalyticsApp />} />
-          <Route path="/test-api" element={<TestApi />} />
         </Routes>
       </div>
     </div>

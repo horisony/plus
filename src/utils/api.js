@@ -13,7 +13,7 @@ export const getCurrentUserId = () => {
   // 例如：从JWT token解析、从session storage等
   
   // 临时返回测试用的用户ID
-  return 'test-user-123';
+  return '550e8400-e29b-41d4-a716-446655440000';
 };
 
 // 创建带有认证头的fetch请求
@@ -22,6 +22,7 @@ export const apiRequest = async (url, options = {}) => {
   
   const defaultHeaders = {
     'Content-Type': 'application/json',
+    'Authorization': 'Bearer fake-jwt-token', // 临时JWT token
     'X-User-ID': currentUserId,
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache',
