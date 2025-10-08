@@ -1,16 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './EditAvatar.css';
+import { getAgentDetails, publishAgent, sendChatMessage } from '../../utils/agentApi';
 
 // 顶部导航栏组件
-const EditNavbar = ({ onBack }) => {
+const EditNavbar = ({ onBack, onPublish, isPublishing }) => {
   return (
     <div className="ea-navbar">
       <div className="ea-nav-left">
         <button onClick={onBack} className="ea-back-button">← 返回</button>
         <h1 className="ea-nav-title">编辑分身</h1>
       </div>
-      <button className="ea-publish-button">发布分身</button>
+      <button 
+        className="ea-publish-button" 
+        onClick={onPublish}
+        disabled={isPublishing}
+        style={{
+          opacity: isPublishing ? 0.6 : 1,
+          cursor: isPublishing ? 'not-allowed' : 'pointer'
+        }}
+      >
+        {isPublishing ? '发布中...' : '发布分身'}
+      </button>
     </div>
   );
 };
@@ -229,28 +240,18 @@ const PreviewAndDebug = ({ agentData, userId }) => {
   // 调用聊天API
   const callChatAPI = async (userMessage) => {
     try {
-      // 构建请求体，参考md文档
-      const requestBody = {
-        agent_id: userId || "test-agent-123", // 使用userId作为agent_id
-        message: userMessage,
-        conversation_context: conversationContext,
-        stream: false,
-        temperature: 0.8,
-        max_tokens: 1500
-      };
-
-      console.log('发送聊天请求:', requestBody);
-
-      const response = await fetch('/api/api/v1/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-User-ID': userId || 'test-user-123'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      const result = await response.json();
+      const result = await sendChatMessage(
+        userMessage, 
+        userId || "test-agent-123", 
+        conversationContext, 
+        userId || 'test-user-123',
+        {
+          stream: false,
+          temperature: 0.8,
+          max_tokens: 1500
+        }
+      );
+      
       console.log('聊天API响应:', result);
 
       if (result.success && result.data) {
@@ -402,41 +403,26 @@ const EditAvatar = () => {
   });
   const [loading, setLoading] = useState(false);  // 默认不显示loading
   const [error, setError] = useState(null);
+  const [isPublishing, setIsPublishing] = useState(false);  // 发布状态
+  const [agentId, setAgentId] = useState(null);  // 存储agent_id
 
   const handleBack = () => navigate(-1);
 
   // 尝试加载后端数据，失败则使用默认值
   const loadAgentData = async () => {
     try {
-      const apiUrl = `/api/api/v1/agents/${userId}`;
-      console.log('请求URL:', apiUrl);
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-User-ID': userId,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        },
-        cache: 'no-store'
-      });
-      console.log('发送的请求头 X-User-ID:', userId);
-
-      // 检查响应类型
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const result = await response.json();
-        console.log('API响应数据:', result);
-        if (result.success && result.data) {
-          setAgentData(prev => ({ ...prev, ...result.data }));
-          console.log('成功更新agent数据:', result.data);
-        } else {
-          console.log('后端返回格式异常:', result);
+      const result = await getAgentDetails(userId, userId);
+      console.log('API响应数据:', result);
+      
+      if (result.success && result.data) {
+        setAgentData(prev => ({ ...prev, ...result.data }));
+        // 存储agent_id，用于后续的发布操作
+        if (result.data.agent_id || result.data.id) {
+          setAgentId(result.data.agent_id || result.data.id);
         }
+        console.log('成功更新agent数据:', result.data);
       } else {
-        const text = await response.text();
-        console.log('后端未返回JSON，原始内容:', text.substring(0, 200));
+        console.log('后端返回格式异常:', result);
       }
     } catch (err) {
       console.log('API调用失败:', err.message);
@@ -462,11 +448,48 @@ const EditAvatar = () => {
     }));
   };
 
+  // 发布分身的功能
+  const handlePublish = async () => {
+    if (isPublishing) return;
+    
+    setIsPublishing(true);
+    setError(null);
+
+    try {
+      const result = await publishAgent(agentData, userId, agentId);
+      console.log('发布分身 API 响应:', result);
+
+      if (result.success) {
+        // 发布成功
+        if (result.data && result.data.agent_id) {
+          setAgentId(result.data.agent_id);
+        }
+        alert('分身发布成功！');
+        // 可以选择跳转到其他页面或刷新数据
+        // navigate('/agents'); // 跳转到分身列表页
+      } else {
+        console.error('发布分身失败:', result);
+        setError(result.message || '发布失败，请重试');
+        alert('发布失败：' + (result.message || '请重试'));
+      }
+    } catch (err) {
+      console.error('发布分身请求失败:', err);
+      setError('网络错误，请检查连接后重试');
+      alert('网络错误，请检查连接后重试');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
   // 页面始终渲染，不管是否成功加载后端数据
 
   return (
     <div className="ea-container">
-      <EditNavbar onBack={handleBack} />
+      <EditNavbar 
+        onBack={handleBack} 
+        onPublish={handlePublish}
+        isPublishing={isPublishing}
+      />
       
 
       

@@ -1,0 +1,563 @@
+/* UserAIAgentDashboard.css */
+
+.ud-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* 主要内容区域 */
+.ud-content {
+  display: flex;
+  flex: 1;
+  gap: 6px;
+  padding: 0 12px 12px 12px;
+  min-height: 0;
+  height: 100vh;
+}
+
+.ud-left-column {
+  width: 270px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ud-right-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 卡片通用样式 */
+.ud-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.ud-card-title {
+  padding: 20px 20px 16px 20px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* 分身列表卡片 */
+.ud-agents-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ud-agents-card .ud-card-title {
+  display: none;
+}
+
+.ud-agents-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.ud-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.ud-empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.ud-empty-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.ud-empty-desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.ud-agent-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ud-agent-item:hover {
+  background-color: #f9fafb;
+}
+
+.ud-agent-item.active {
+  background-color: #eff6ff;
+  border-left: 4px solid #3b82f6;
+}
+
+.ud-agent-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.ud-agent-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ud-agent-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.ud-agent-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ud-agent-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.ud-agent-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.ud-agent-knowledge {
+  font-size: 12px;
+  color: #9ca3af;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ud-agent-actions {
+  display: flex;
+  align-items: center;
+}
+
+.ud-edit-btn {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.ud-edit-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* 任务列表样式 */
+.ud-task-list {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.ud-task-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.ud-task-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.ud-task-loading {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.ud-task-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ud-task-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px 10px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px solid #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.ud-task-item:hover {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+}
+
+.ud-task-status {
+  font-size: 14px;
+  margin-right: 10px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.ud-task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ud-task-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1f2937;
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+
+.ud-task-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ud-task-priority {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.ud-task-date {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+/* 聊天卡片 */
+.ud-chat-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ud-chat-card .ud-card-title {
+  display: none;
+}
+
+.ud-chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+}
+
+.ud-chat-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #f3f4f6;
+  background-color: #fafafa;
+}
+
+.ud-chat-agent-info {
+  display: flex;
+  align-items: center;
+}
+
+.ud-chat-agent-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 12px;
+}
+
+.ud-chat-agent-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ud-chat-agent-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.ud-chat-agent-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.ud-chat-agent-status {
+  font-size: 12px;
+  color: #10b981;
+}
+
+.ud-chat-no-agent {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.ud-chat-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: #fafafa;
+  min-height: 0;
+  border-radius: 12px 12px 0 0;
+}
+
+.ud-message-bubble-bot, .ud-message-bubble-user {
+  margin-bottom: 16px;
+  max-width: 70%;
+}
+
+.ud-message-bubble-bot {
+  align-self: flex-start;
+}
+
+.ud-message-bubble-user {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.ud-message-content {
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.ud-message-bubble-bot .ud-message-content {
+  background: white;
+  color: #1f2937;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ud-message-bubble-user .ud-message-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.ud-message-time {
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.ud-message-bubble-user .ud-message-time {
+  text-align: right;
+}
+
+.ud-thinking {
+  font-style: italic;
+  color: #6b7280 !important;
+  background: #f3f4f6 !important;
+}
+
+.ud-chat-input {
+  padding: 20px;
+  background: white;
+  border-radius: 0 0 12px 12px;
+}
+
+.ud-input-panel {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  padding: 20px;
+}
+
+.ud-content-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease;
+  background: white;
+  color: #111827;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+
+.ud-content-textarea:focus {
+  border-color: #2563eb;
+}
+
+.ud-content-textarea::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.ud-content-textarea:disabled {
+  background-color: #f9fafb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.ud-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ud-toolbar-left {
+  display: flex;
+  gap: 12px;
+}
+
+.ud-action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ud-tool-button {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.ud-tool-button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.ud-content-send-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 6px;
+  background: #fbbf24;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  opacity: 1;
+}
+
+.ud-content-send-button:hover:not(:disabled) {
+  background: #f97316;
+  transform: translateY(-1px);
+}
+
+.ud-content-send-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ud-stop-icon {
+  width: 12px;
+  height: 12px;
+  background: #111;
+  display: block;
+  border-radius: 2px;
+}
+
+.ud-chat-stats {
+  padding: 12px 20px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  border-top: 1px solid #f3f4f6;
+  background-color: #fafafa;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .ud-content {
+    flex-direction: column;
+  }
+  
+  .ud-left-column {
+    width: 100%;
+    max-height: 300px;
+  }
+  
+  .ud-right-column {
+    flex: 1;
+  }
+}
+
+/* 滚动条样式 */
+.ud-agents-list::-webkit-scrollbar,
+.ud-chat-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ud-agents-list::-webkit-scrollbar-track,
+.ud-chat-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.ud-agents-list::-webkit-scrollbar-thumb,
+.ud-chat-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.ud-agents-list::-webkit-scrollbar-thumb:hover,
+.ud-chat-container::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}

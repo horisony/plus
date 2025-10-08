@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import AIAgent from './features/ai-agent/AIAgent';
 import EditAvatar from './features/ai-agent/EditAvatar';
+import UserAIAgentDashboard from './features/ai-agent/UserAIAgentDashboard';
 import WarningCardDetail from './features/ai-agent/WarningCardDetail';
 import CommercialDashboard from './features/commercial/CommercialDashboard';
 import TopNavbar from './TopNavbar';
@@ -60,17 +61,16 @@ function App() {
       />
       
       {/* 页面内容区域 */}
-      <div style={styles.content}>
-        <Routes>
-          <Route path="/" element={<DataAnalyticsApp />} />
-          <Route path="/ai" element={<AIAgent />} />
-          <Route path="/commercial" element={<CommercialDashboard />} />
-          <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
-          <Route path="/warnings/:type" element={<WarningCardDetail />} />
-          <Route path="/content" element={<ContentOpsPage />} />
-          <Route path="/data" element={<DataAnalyticsApp />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
+        <Route path="/ai" element={<div style={styles.content}><AIAgent /></div>} />
+        <Route path="/commercial" element={<div style={styles.content}><CommercialDashboard /></div>} />
+        <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
+        <Route path="/user-dashboard" element={<UserAIAgentDashboard />} />
+        <Route path="/warnings/:type" element={<div style={styles.content}><WarningCardDetail /></div>} />
+        <Route path="/content" element={<div style={styles.content}><ContentOpsPage /></div>} />
+        <Route path="/data" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
+      </Routes>
     </div>
   );
 }
