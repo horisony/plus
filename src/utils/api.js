@@ -21,12 +21,16 @@ export const apiRequest = async (url, options = {}) => {
   const currentUserId = getCurrentUserId();
   
   const defaultHeaders = {
-    'Content-Type': 'application/json',
     'Authorization': 'Bearer fake-jwt-token', // 临时JWT token
     'X-User-ID': currentUserId,
     'Cache-Control': 'no-cache',
     'Pragma': 'no-cache',
   };
+
+  // 如果不是FormData，才添加Content-Type
+  if (!(options.body instanceof FormData)) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
 
   const config = {
     ...options,
@@ -35,6 +39,11 @@ export const apiRequest = async (url, options = {}) => {
       ...options.headers,
     },
   };
+
+  // 如果headers中Content-Type被明确设置为undefined，则删除它
+  if (config.headers['Content-Type'] === undefined) {
+    delete config.headers['Content-Type'];
+  }
 
   const fullUrl = url.startsWith('http') ? url : `${API_BASE_URL}${url}`;
   

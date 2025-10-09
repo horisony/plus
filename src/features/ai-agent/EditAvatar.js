@@ -192,22 +192,36 @@ const VoiceSettings = ({ agentData, onVoiceChange, onAgeChange, onGenderChange }
 
   return (
     <Card title="人物设定">
-      <DefaultsTabs 
-        agentData={agentData} 
-        onAgeChange={onAgeChange}
-        onGenderChange={onGenderChange}
-      />
-      <div>
-        <select 
-          value={selectedVoice} 
-          onChange={handleVoiceChange}
-          className="ea-default-select"
-        >
-          <option>帅气男声</option>
-          <option>温柔女声</option>
-          <option>可爱童声</option>
-          <option>成熟男声</option>
-        </select>
+      <div className="ea-defaults-row">
+        <div className="ea-default-tab">
+          <div className="ea-default-label">默认年龄</div>
+          <select value={agentData?.age || '26-35'} onChange={onAgeChange} className="ea-default-select">
+            <option value="18-25">18-25</option>
+            <option value="26-35">26-35</option>
+            <option value="36-45">36-45</option>
+            <option value="46+">46+</option>
+          </select>
+        </div>
+        <div className="ea-default-tab">
+          <div className="ea-default-label">性别</div>
+          <select value={agentData?.gender || 'male'} onChange={onGenderChange} className="ea-default-select">
+            <option value="male">男性</option>
+            <option value="female">女性</option>
+          </select>
+        </div>
+        <div className="ea-default-tab">
+          <div className="ea-default-label">声音</div>
+          <select 
+            value={selectedVoice} 
+            onChange={handleVoiceChange}
+            className="ea-default-select"
+          >
+            <option>帅气男声</option>
+            <option>温柔女声</option>
+            <option>可爱童声</option>
+            <option>成熟男声</option>
+          </select>
+        </div>
       </div>
     </Card>
   );

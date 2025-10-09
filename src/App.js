@@ -5,6 +5,9 @@ import EditAvatar from './features/ai-agent/EditAvatar';
 import UserAIAgentDashboard from './features/ai-agent/UserAIAgentDashboard';
 import WarningCardDetail from './features/ai-agent/WarningCardDetail';
 import CommercialDashboard from './features/commercial/CommercialDashboard';
+import ProjectDetail from './features/commercial/ProjectDetail';
+import MarketingCampaign from './features/commercial/MarketingCampaign';
+import ChatPage from './features/chat/ChatPage';
 import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
 import { DataAnalyticsApp } from './features/data-analytics';
@@ -65,6 +68,10 @@ function App() {
         <Route path="/" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
         <Route path="/ai" element={<div style={styles.content}><AIAgent /></div>} />
         <Route path="/commercial" element={<div style={styles.content}><CommercialDashboard /></div>} />
+        <Route path="/commercial/project/:projectId" element={<div style={styles.content}><ProjectDetail /></div>} />
+        <Route path="/marketing-campaign" element={<div style={styles.content}><MarketingCampaign /></div>} />
+        <Route path="/marketing-campaign/:projectId" element={<div style={styles.content}><MarketingCampaign /></div>} />
+        <Route path="/chat/:conversationId" element={<ChatPage />} />
         <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
         <Route path="/user-dashboard" element={<UserAIAgentDashboard />} />
         <Route path="/warnings/:type" element={<div style={styles.content}><WarningCardDetail /></div>} />
@@ -77,9 +84,9 @@ function App() {
 
 const styles = {
   content: {
-    padding: '24px',
+    padding: '12px 24px',
     backgroundColor: '#f5f7fa',
-    minHeight: 'calc(100vh - 80px)', // 减去导航栏高度
+    minHeight: 'calc(100vh - 60px)', // 减去导航栏高度
   }
 };
 

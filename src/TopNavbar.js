@@ -112,10 +112,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px 24px',
+    padding: '10px 24px',
     backgroundColor: '#fff',
-    borderBottom: '1px solid #e5e5e5',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    borderBottom: '2px solid #e0e0e0',
+    boxShadow: '0 10px 6px 5px rgba(0,0,0,0.02)',
+    position: 'relative',
+    zIndex: 1000,
   },
   navLeft: {
     display: 'flex',
@@ -147,7 +149,7 @@ const styles = {
     alignItems: 'center',
   },
   tabButton: {
-    padding: '12px 4px',
+    padding: '10px 4px',
     border: 'none',
     backgroundColor: 'transparent',
     color: '#444',
@@ -162,7 +164,7 @@ const styles = {
   },
   activeUnderline: {
     position: 'absolute',
-    bottom: '-12px',
+    bottom: '-10px',
     left: 0,
     width: '100%',
     height: '3px',
