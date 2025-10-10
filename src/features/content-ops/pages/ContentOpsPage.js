@@ -11,6 +11,7 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [snippetPage, setSnippetPage] = useState(0);
 
   // 用于模拟流式生成
   const generatorTimerRef = useRef(null);
@@ -151,81 +152,81 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
             <div>
               <div style={styles.cardTitleOutside}>{copy.sections.fanFavorites}</div>
               <div style={styles.cardBox}>
-              <div>
-                {copy.fanFavorites.map((item, index) => (
-                  <div
-                    key={index}
-                    style={styles.cardItem}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('text/plain', item);
-                      e.target.style.opacity = '0.5';
-                      e.target.style.transform = 'scale(0.95)';
-                    }}
-                    onDragEnd={(e) => {
-                      e.target.style.opacity = '1';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+                <div style={styles.cardContent}>
+                  {copy.fanFavorites.map((item, index) => (
+                    <div
+                      key={index}
+                      style={styles.cardItem}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', item);
+                        e.target.style.opacity = '0.5';
+                        e.target.style.transform = 'scale(0.95)';
+                      }}
+                      onDragEnd={(e) => {
+                        e.target.style.opacity = '1';
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div>
               <div style={styles.cardTitleOutside}>{copy.sections.hotTopics}</div>
               <div style={styles.cardBox}>
-              <div>
-                {copy.hotTopics.map((item, index) => (
-                  <div
-                    key={index}
-                    style={styles.cardItem}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('text/plain', item);
-                      e.target.style.opacity = '0.5';
-                      e.target.style.transform = 'scale(0.95)';
-                    }}
-                    onDragEnd={(e) => {
-                      e.target.style.opacity = '1';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+                <div style={styles.cardContent}>
+                  {copy.hotTopics.map((item, index) => (
+                    <div
+                      key={index}
+                      style={styles.cardItem}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', item);
+                        e.target.style.opacity = '0.5';
+                        e.target.style.transform = 'scale(0.95)';
+                      }}
+                      onDragEnd={(e) => {
+                        e.target.style.opacity = '1';
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div>
               <div style={styles.cardTitleOutside}>{copy.sections.trends}</div>
               <div style={styles.cardBox}>
-              <div>
-                {copy.trends.map((item, index) => (
-                  <div
-                    key={index}
-                    style={styles.cardItem}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.setData('text/plain', item);
-                      e.target.style.opacity = '0.5';
-                      e.target.style.transform = 'scale(0.95)';
-                    }}
-                    onDragEnd={(e) => {
-                      e.target.style.opacity = '1';
-                      e.target.style.transform = 'scale(1)';
-                    }}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
+                <div style={styles.cardContent}>
+                  {copy.trends.map((item, index) => (
+                    <div
+                      key={index}
+                      style={styles.cardItem}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData('text/plain', item);
+                        e.target.style.opacity = '0.5';
+                        e.target.style.transform = 'scale(0.95)';
+                      }}
+                      onDragEnd={(e) => {
+                        e.target.style.opacity = '1';
+                        e.target.style.transform = 'scale(1)';
+                      }}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div>
-              <div style={styles.cardTitleWithButton}>
-                <span>{copy.sections.inspirationSnippets}</span>
+              <div style={styles.cardTitleOutside}>
+                {copy.sections.inspirationSnippets}
                 <button 
                   style={styles.addSnippetButton}
                   onClick={onNavigateToSnippets}
@@ -234,10 +235,10 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
                 </button>
               </div>
               <div style={styles.cardBox}>
-                <div>
-                  {copy.inspirationSnippets.map((item, index) => (
+                <div style={styles.snippetsContent}>
+                  {copy.inspirationSnippets.slice(snippetPage * 3, (snippetPage + 1) * 3).map((item, index) => (
                     <div
-                      key={index}
+                      key={snippetPage * 3 + index}
                       style={styles.inspirationItem}
                       draggable
                       onDragStart={(e) => {
@@ -253,6 +254,31 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
                       {item}
                     </div>
                   ))}
+                </div>
+                <div style={styles.paginationContainer}>
+                  <button 
+                    style={{
+                      ...styles.paginationButton,
+                      ...(snippetPage === 0 ? styles.paginationButtonDisabled : {})
+                    }}
+                    onClick={() => setSnippetPage(Math.max(0, snippetPage - 1))}
+                    disabled={snippetPage === 0}
+                  >
+                    ‹
+                  </button>
+                  <span style={styles.paginationInfo}>
+                    {snippetPage + 1} / {Math.max(1, Math.ceil(copy.inspirationSnippets.length / 3))}
+                  </span>
+                  <button 
+                    style={{
+                      ...styles.paginationButton,
+                      ...(snippetPage >= Math.max(1, Math.ceil(copy.inspirationSnippets.length / 3)) - 1 ? styles.paginationButtonDisabled : {})
+                    }}
+                    onClick={() => setSnippetPage(Math.min(Math.max(1, Math.ceil(copy.inspirationSnippets.length / 3)) - 1, snippetPage + 1))}
+                    disabled={snippetPage >= Math.max(1, Math.ceil(copy.inspirationSnippets.length / 3)) - 1}
+                  >
+                    ›
+                  </button>
                 </div>
               </div>
             </div>
@@ -385,13 +411,26 @@ const styles = {
     borderRadius: '16px',
     boxShadow: designTokens.shadows.lg,
     padding: designTokens.spacing.lg,
-    minHeight: 360, // 更长的长方形，符合设计稿
+    height: 360, // 固定高度，确保所有屏幕下一致
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden', // 防止内容溢出
   },
   cardTitleOutside: {
     fontWeight: designTokens.typography.fontWeight.semibold,
     color: designTokens.colors.gray[800],
     marginBottom: designTokens.spacing.lg, // 标题与卡片间距更大
     paddingLeft: designTokens.spacing.xs,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  
+  cardContent: {
+    flex: 1,
+    overflowY: 'auto', // 如果内容过长可以滚动
+    display: 'flex',
+    flexDirection: 'column',
   },
   cardTitle: {
     fontWeight: designTokens.typography.fontWeight.semibold,
@@ -433,13 +472,6 @@ const styles = {
     flexDirection: 'column',
   },
   
-  cardTitleWithButton: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: designTokens.spacing.lg,
-    paddingLeft: designTokens.spacing.xs,
-  },
   
   addSnippetButton: {
     backgroundColor: 'transparent',
@@ -452,18 +484,56 @@ const styles = {
     transition: 'background-color 0.2s ease',
   },
   
+  snippetsContent: {
+    flex: 1,
+    overflowY: 'auto', // 如果内容过长可以滚动
+    display: 'flex',
+    flexDirection: 'column',
+  },
+
   inspirationItem: {
     padding: `${designTokens.spacing.md} 0`,
     color: designTokens.colors.gray[700],
     fontSize: designTokens.typography.fontSize.sm,
     cursor: 'grab',
-    marginBottom: designTokens.spacing.lg, // 灵感碎片间距更大
+    marginBottom: designTokens.spacing.xl, // 增大间距
     borderBottom: `1px solid ${designTokens.colors.gray[100]}`,
     transition: 'all 0.2s ease',
     borderRadius: '4px',
     paddingLeft: designTokens.spacing.xs,
     paddingRight: designTokens.spacing.xs,
     lineHeight: '1.6',
+  },
+  
+  paginationContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: designTokens.spacing.md,
+    marginTop: designTokens.spacing.lg,
+    paddingTop: designTokens.spacing.md,
+  },
+  
+  paginationButton: {
+    background: 'none',
+    border: 'none',
+    color: designTokens.colors.gray[900],
+    fontSize: '18px',
+    cursor: 'pointer',
+    padding: `${designTokens.spacing.xs} ${designTokens.spacing.sm}`,
+    borderRadius: designTokens.borderRadius.sm,
+    transition: 'all 0.2s ease',
+  },
+  
+  paginationButtonDisabled: {
+    color: designTokens.colors.gray[300],
+    cursor: 'not-allowed',
+  },
+  
+  paginationInfo: {
+    fontSize: designTokens.typography.fontSize.sm,
+    color: designTokens.colors.gray[600],
+    fontWeight: designTokens.typography.fontWeight.medium,
   },
   
   addSnippetPanel: {

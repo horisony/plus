@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import AIAgent from './features/ai-agent/AIAgent';
 import EditAvatar from './features/ai-agent/EditAvatar';
 import UserAIAgentDashboard from './features/ai-agent/UserAIAgentDashboard';
@@ -22,19 +22,34 @@ function App() {
     avatar: null
   });
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 处理标签切换（使用路由）
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
     const pageMap = {
       data: '/data',
-      content: '/content',
+      content: '/content-ops',
       commercial: '/commercial',
       ai: '/ai',
     };
     const path = pageMap[tabKey] || '/';
     navigate(path);
   };
+
+  // 首次加载与每次路由变更时，让顶部 tab 与 URL 同步
+  useEffect(() => {
+    const { pathname } = location;
+    if (pathname.startsWith('/content-ops')) {
+      setActiveTab('content');
+    } else if (pathname.startsWith('/commercial')) {
+      setActiveTab('commercial');
+    } else if (pathname.startsWith('/ai')) {
+      setActiveTab('ai');
+    } else {
+      setActiveTab('data');
+    }
+  }, [location]);
 
   // 用户操作函数
   const handleLogin = () => {
@@ -48,26 +63,6 @@ function App() {
 
   const handleProfile = () => {
     console.log('跳转到个人资料页面');
-  };
-
-  // 渲染页面内容（不包含导航栏）
-  const renderPageContent = () => {
-    switch (currentPage) {
-      case 'dataAnalytics':
-        return <DataAnalyticsApp />;
-      case 'dashboard':
-        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
-      case 'commercial':
-        return <CommercialDashboard />;
-      case 'contentOps':
-        return <ContentOpsPage onNavigateToSnippets={() => setCurrentPage('inspirationSnippets')} />;
-      case 'inspirationSnippets':
-        return <InspirationSnippetsPage onBack={() => setCurrentPage('contentOps')} />;
-      case 'editAvatar':
-        return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
-      default:
-        return <DataAnalyticsApp />;
-    }
   };
 
   return (
@@ -84,25 +79,28 @@ function App() {
       
       {/* 页面内容区域 */}
       <Routes>
-        <Route path="/" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
-        <Route path="/ai" element={<div style={styles.content}><AIAgent /></div>} />
-        <Route path="/commercial" element={<div style={styles.content}><CommercialDashboard /></div>} />
-        <Route path="/commercial/project/:projectId" element={<div style={styles.content}><ProjectDetail /></div>} />
-        <Route path="/marketing-campaign" element={<div style={styles.content}><MarketingCampaign /></div>} />
-        <Route path="/marketing-campaign/:projectId" element={<div style={styles.content}><MarketingCampaign /></div>} />
+        <Route path="/" element={<Navigate to="/data" replace />} />
+        <Route path="/ai" element={<AIAgent />} />
+        <Route path="/commercial" element={<CommercialDashboard />} />
+        <Route path="/commercial/project/:projectId" element={<ProjectDetail />} />
+        <Route path="/marketing-campaign" element={<MarketingCampaign />} />
+        <Route path="/marketing-campaign/:projectId" element={<MarketingCampaign />} />
         <Route path="/chat/:conversationId" element={<ChatPage />} />
         <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
         <Route path="/user-dashboard" element={<UserAIAgentDashboard />} />
-        <Route path="/warnings/:type" element={<div style={styles.content}><WarningCardDetail /></div>} />
-        <Route path="/content" element={<div style={styles.content}><ContentOpsPage /></div>} />
-        <Route path="/data" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
+        <Route path="/warnings/:type" element={<WarningCardDetail />} />
+        <Route path="/content-ops" element={<div style={styles.contentOpsContainer}><ContentOpsPage onNavigateToSnippets={() => navigate('/content-ops/snippets')} /></div>} />
+        <Route path="/content-ops/snippets" element={<div style={styles.contentOpsContainer}><InspirationSnippetsPage onBack={() => navigate('/content-ops')} /></div>} />
+        <Route path="/data" element={<DataAnalyticsApp />} />
+        <Route path="*" element={<Navigate to="/data" replace />} />
       </Routes>
     </div>
   );
 }
 
 const styles = {
-  content: {
+  // 只对内容运营相关页面应用高度限制
+  contentOpsContainer: {
     height: 'calc(100vh - 80px)', // 减去导航栏高度
     maxHeight: 'calc(100vh - 80px)', // 确保不超过计算高度
     overflow: 'hidden', // 防止内容溢出

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AiOutlineMessage } from 'react-icons/ai';
 
 const TopNavbar = ({ 
   activeTab, 
@@ -47,7 +48,7 @@ const TopNavbar = ({
       {/* 右侧用户区域 */}
       <div style={styles.navRight}>
         <div style={styles.actions}>
-          <span style={{ fontSize: 20 }}>💬</span>
+          <AiOutlineMessage style={{ fontSize: 20, color: '#666' }} />
         </div>
         <div 
           style={styles.userArea}
