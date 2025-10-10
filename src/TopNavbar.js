@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { AiOutlineMessage } from 'react-icons/ai';
 
 const TopNavbar = ({ 
   activeTab, 
@@ -48,7 +47,7 @@ const TopNavbar = ({
       {/* 右侧用户区域 */}
       <div style={styles.navRight}>
         <div style={styles.actions}>
-          <AiOutlineMessage size={20} color="#111" />
+          <span style={{ fontSize: 20 }}>💬</span>
         </div>
         <div 
           style={styles.userArea}
@@ -113,10 +112,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '16px 24px',
+    padding: '10px 24px',
     backgroundColor: '#fff',
-    borderBottom: '1px solid #e5e5e5',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    borderBottom: '2px solid #e0e0e0',
+    boxShadow: '0 10px 6px 5px rgba(0,0,0,0.02)',
+    position: 'relative',
+    zIndex: 1000,
   },
   navLeft: {
     display: 'flex',
@@ -126,6 +127,8 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
+        marginLeft: '50px', // 推荐使用这个方式
+
   },
   logoImage: {
     width: '60px',
@@ -146,7 +149,7 @@ const styles = {
     alignItems: 'center',
   },
   tabButton: {
-    padding: '12px 4px',
+    padding: '10px 4px',
     border: 'none',
     backgroundColor: 'transparent',
     color: '#444',
@@ -161,7 +164,7 @@ const styles = {
   },
   activeUnderline: {
     position: 'absolute',
-    bottom: '-12px',
+    bottom: '-10px',
     left: 0,
     width: '100%',
     height: '3px',
@@ -283,6 +286,12 @@ Object.assign(styles, {
     ':hover': {
       backgroundColor: '#f5f5f5',
     }
+  },
+   logoImage: {
+    width: '32px',
+    height: '32px',
+    objectFit: 'contain',
+    transform: 'scale(2.2)', // 放大1.5倍，实际显示为48x48，但占位还是32x32
   },
 });
 

@@ -1,36 +1,39 @@
 import React, { useState } from 'react';
-import Dashboard from './components/Dashboard';
-import EditAvatar from './components/EditAvatar';
-import CommercialDashboard from './components/CommercialDashboard';
-import TopNavbar from './components/TopNavbar';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import AIAgent from './features/ai-agent/AIAgent';
+import EditAvatar from './features/ai-agent/EditAvatar';
+import UserAIAgentDashboard from './features/ai-agent/UserAIAgentDashboard';
+import WarningCardDetail from './features/ai-agent/WarningCardDetail';
+import CommercialDashboard from './features/commercial/CommercialDashboard';
+import ProjectDetail from './features/commercial/ProjectDetail';
+import MarketingCampaign from './features/commercial/MarketingCampaign';
+import ChatPage from './features/chat/ChatPage';
+import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
 import InspirationSnippetsPage from './features/content-ops/pages/InspirationSnippetsPage';
 import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('dashboard');
   const [activeTab, setActiveTab] = useState('data');
   const [userInfo, setUserInfo] = useState({
     name: '管理员',
     email: 'admin@plusco.com',
     avatar: null
   });
+  const navigate = useNavigate();
 
-  // 处理标签切换
+  // 处理标签切换（使用路由）
   const handleTabChange = (tabKey) => {
     setActiveTab(tabKey);
-    
     const pageMap = {
-      'data': 'dataAnalytics',
-      'content': 'contentOps', 
-      'commercial': 'commercial',
-      'ai': 'dashboard'
+      data: '/data',
+      content: '/content',
+      commercial: '/commercial',
+      ai: '/ai',
     };
-    
-    if (pageMap[tabKey]) {
-      setCurrentPage(pageMap[tabKey]);
-    }
+    const path = pageMap[tabKey] || '/';
+    navigate(path);
   };
 
   // 用户操作函数
@@ -80,9 +83,20 @@ function App() {
       />
       
       {/* 页面内容区域 */}
-      <div style={styles.content}>
-        {renderPageContent()}
-      </div>
+      <Routes>
+        <Route path="/" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
+        <Route path="/ai" element={<div style={styles.content}><AIAgent /></div>} />
+        <Route path="/commercial" element={<div style={styles.content}><CommercialDashboard /></div>} />
+        <Route path="/commercial/project/:projectId" element={<div style={styles.content}><ProjectDetail /></div>} />
+        <Route path="/marketing-campaign" element={<div style={styles.content}><MarketingCampaign /></div>} />
+        <Route path="/marketing-campaign/:projectId" element={<div style={styles.content}><MarketingCampaign /></div>} />
+        <Route path="/chat/:conversationId" element={<ChatPage />} />
+        <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
+        <Route path="/user-dashboard" element={<UserAIAgentDashboard />} />
+        <Route path="/warnings/:type" element={<div style={styles.content}><WarningCardDetail /></div>} />
+        <Route path="/content" element={<div style={styles.content}><ContentOpsPage /></div>} />
+        <Route path="/data" element={<div style={styles.content}><DataAnalyticsApp /></div>} />
+      </Routes>
     </div>
   );
 }
