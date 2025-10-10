@@ -10,6 +10,7 @@ import MarketingCampaign from './features/commercial/MarketingCampaign';
 import ChatPage from './features/chat/ChatPage';
 import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
+import InspirationSnippetsPage from './features/content-ops/pages/InspirationSnippetsPage';
 import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
@@ -49,7 +50,25 @@ function App() {
     console.log('跳转到个人资料页面');
   };
 
-  // 使用 react-router 的路由表来渲染页面
+  // 渲染页面内容（不包含导航栏）
+  const renderPageContent = () => {
+    switch (currentPage) {
+      case 'dataAnalytics':
+        return <DataAnalyticsApp />;
+      case 'dashboard':
+        return <Dashboard onEditAvatar={() => setCurrentPage('editAvatar')} />;
+      case 'commercial':
+        return <CommercialDashboard />;
+      case 'contentOps':
+        return <ContentOpsPage onNavigateToSnippets={() => setCurrentPage('inspirationSnippets')} />;
+      case 'inspirationSnippets':
+        return <InspirationSnippetsPage onBack={() => setCurrentPage('contentOps')} />;
+      case 'editAvatar':
+        return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
+      default:
+        return <DataAnalyticsApp />;
+    }
+  };
 
   return (
     <div className="App">
@@ -84,9 +103,10 @@ function App() {
 
 const styles = {
   content: {
-    padding: '12px 24px',
+    height: 'calc(100vh - 80px)', // 减去导航栏高度
+    maxHeight: 'calc(100vh - 80px)', // 确保不超过计算高度
+    overflow: 'hidden', // 防止内容溢出
     backgroundColor: '#f5f7fa',
-    minHeight: 'calc(100vh - 60px)', // 减去导航栏高度
   }
 };
 
