@@ -17,7 +17,7 @@ const LeftSidebar = () => {
       </div>
       
       {/* 历史对话 */}
-      <div style={styles.section}>
+      <div style={styles.sectionLarge}>
         <div style={styles.sectionTitle}>{copy.navigation.historyConversations}</div>
         <div style={styles.conversationList}>
           {copy.historyConversations.map((conversation, index) => (
@@ -28,10 +28,6 @@ const LeftSidebar = () => {
         </div>
       </div>
       
-      {/* 底部提示 */}
-      <div style={styles.footer}>
-        <div style={styles.footerText}>{copy.navigation.commercialIntent}</div>
-      </div>
     </div>
   );
 };
@@ -53,15 +49,17 @@ const styles = {
     padding: `${designTokens.spacing.md} ${designTokens.spacing.lg}`,
     backgroundColor: designTokens.colors.gray[100],
     border: 'none',
-    borderRadius: designTokens.borderRadius.md,
+    borderRadius: '999px',
     fontSize: designTokens.typography.fontSize.base,
-    fontWeight: designTokens.typography.fontWeight.medium,
-    color: designTokens.colors.gray[700],
+    fontWeight: designTokens.typography.fontWeight.semibold,
+    color: designTokens.colors.gray[800],
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: designTokens.spacing.sm,
     transition: 'all 0.2s ease',
+    boxShadow: designTokens.shadows.md,
   },
   
   plusIcon: {
@@ -74,19 +72,27 @@ const styles = {
     flexDirection: 'column',
     gap: designTokens.spacing.sm,
   },
+  sectionLarge: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: designTokens.spacing.sm,
+    marginTop: designTokens.spacing['3xl'],
+  },
   
   sectionTitle: {
     fontSize: designTokens.typography.fontSize.base,
     fontWeight: designTokens.typography.fontWeight.semibold,
-    color: designTokens.colors.gray[600],
-    marginBottom: designTokens.spacing.xs,
+    color: designTokens.colors.gray[500],
+    marginTop: designTokens.spacing.lg,
+    marginBottom: designTokens.spacing.sm,
     textAlign: 'left',
   },
   
   conversationList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: designTokens.spacing.xs,
+    gap: designTokens.spacing.md,
+    paddingTop: designTokens.spacing.sm,
   },
   
   conversationItem: {
@@ -95,20 +101,9 @@ const styles = {
     color: designTokens.colors.gray[700],
     cursor: 'pointer',
     transition: 'color 0.2s ease',
-    borderBottom: `1px solid ${designTokens.colors.gray[100]}`,
     textAlign: 'left',
   },
   
-  footer: {
-    marginTop: 'auto',
-    paddingTop: designTokens.spacing.lg,
-  },
-  
-  footerText: {
-    fontSize: designTokens.typography.fontSize.sm,
-    color: designTokens.colors.gray[500],
-    lineHeight: '1.4',
-  },
 };
 
 // 添加悬停效果

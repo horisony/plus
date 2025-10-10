@@ -1,8 +1,10 @@
 // 设计规范常量 - 与现有项目保持一致
 export const designTokens = {
   colors: {
-    primary: '#F44336',        // 主红色
-    primaryBlue: '#2563eb',    // 主蓝色
+    primary: '#2563eb',        // 主蓝色（设为主色）
+    primaryBlue: '#2563eb',    // 兼容旧引用
+    primaryDark: '#1e40af',    // 深蓝
+    primaryLight: '#e9f0ff',   // 淡白蓝
     background: '#f5f7fa',     // 背景色
     white: '#ffffff',
     gray: {
@@ -20,6 +22,18 @@ export const designTokens = {
     accent: {
       yellow: '#fbbf24',
       orange: '#f97316'
+    },
+    red: {
+      50: '#fef2f2',
+      100: '#fee2e2',
+      200: '#fecaca',
+      300: '#fca5a5',
+      400: '#f87171',
+      500: '#ef4444',
+      600: '#dc2626',
+      700: '#b91c1c',
+      800: '#991b1b',
+      900: '#7f1d1d'
     }
   },
   
@@ -30,7 +44,8 @@ export const designTokens = {
     lg: '16px',
     xl: '20px',
     '2xl': '24px',
-    '3xl': '32px'
+    '3xl': '32px',
+    '4xl': '48px'
   },
   
   borderRadius: {
@@ -44,7 +59,8 @@ export const designTokens = {
   shadows: {
     sm: '0 1px 2px rgba(0,0,0,0.05)',
     md: '0 2px 8px rgba(0,0,0,0.1)',
-    lg: '0 4px 12px rgba(0,0,0,0.15)'
+    lg: '0 4px 12px rgba(0,0,0,0.15)',
+    xl: '0 10px 25px rgba(0,0,0,0.2)'
   },
   
   typography: {

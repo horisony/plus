@@ -4,6 +4,7 @@ import EditAvatar from './components/EditAvatar';
 import CommercialDashboard from './components/CommercialDashboard';
 import TopNavbar from './components/TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
+import InspirationSnippetsPage from './features/content-ops/pages/InspirationSnippetsPage';
 import { DataAnalyticsApp } from './features/data-analytics';
 import './App.css';
 
@@ -56,7 +57,9 @@ function App() {
       case 'commercial':
         return <CommercialDashboard />;
       case 'contentOps':
-        return <ContentOpsPage />;
+        return <ContentOpsPage onNavigateToSnippets={() => setCurrentPage('inspirationSnippets')} />;
+      case 'inspirationSnippets':
+        return <InspirationSnippetsPage onBack={() => setCurrentPage('contentOps')} />;
       case 'editAvatar':
         return <EditAvatar onBack={() => setCurrentPage('dashboard')} />;
       default:
@@ -86,9 +89,10 @@ function App() {
 
 const styles = {
   content: {
-    padding: '24px',
+    height: 'calc(100vh - 80px)', // 减去导航栏高度
+    maxHeight: 'calc(100vh - 80px)', // 确保不超过计算高度
+    overflow: 'hidden', // 防止内容溢出
     backgroundColor: '#f5f7fa',
-    minHeight: 'calc(100vh - 80px)', // 减去导航栏高度
   }
 };
 
