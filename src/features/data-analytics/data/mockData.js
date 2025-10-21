@@ -233,7 +233,7 @@ export const mockInfluencerData = [
   },
   {
     id: 'c12',
-    name: '波仔同学',
+    name: '剑桥萌叔',
     category: '科技数码',
     avatar: '/avatar_placeholder.png',
     fans: 835000,
