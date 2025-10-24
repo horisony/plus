@@ -124,7 +124,10 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
               {messages.map((message) => (
                 <div
                   key={message.id}
-                  style={message.sender === 'user' ? styles.userMessage : styles.aiMessage}
+                  style={{
+                    ...styles.messageBubble,
+                    ...(message.sender === 'user' ? styles.userMessage : styles.aiMessage)
+                  }}
                 >
                   {message.content}
                 </div>
@@ -380,11 +383,7 @@ const styles = {
     overflowY: 'auto',
   },
   
-  userMessage: {
-    backgroundColor: '#E7EEFD',
-    color: '#333',
-    alignSelf: 'flex-end',
-    borderRadius: '12px 6px 12px 12px',
+  messageBubble: {
     maxWidth: '70%',
     padding: '12px 16px',
     fontSize: '14px',
@@ -394,18 +393,18 @@ const styles = {
     textAlign: 'left',
   },
   
+  userMessage: {
+    backgroundColor: '#E7EEFD',
+    color: '#333',
+    alignSelf: 'flex-end',
+    borderRadius: '12px 6px 12px 12px',
+  },
+  
   aiMessage: {
     backgroundColor: '#ffffff',
     color: '#374151',
     alignSelf: 'flex-start',
     borderRadius: '6px 12px 12px 12px',
-    maxWidth: '70%',
-    padding: '12px 16px',
-    fontSize: '14px',
-    lineHeight: '1.6',
-    wordWrap: 'break-word',
-    whiteSpace: 'pre-line',
-    textAlign: 'left',
   },
   
   inputArea: {

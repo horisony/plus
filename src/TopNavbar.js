@@ -116,7 +116,7 @@ const styles = {
     padding: '10px 24px',
     backgroundColor: '#fff',
     borderBottom: '2px solid #e0e0e0',
-    boxShadow: '0 10px 6px 5px rgba(0,0,0,0.02)',
+    boxShadow: '0 0 6px rgba(0,0,0,0.1)',
     position: 'relative',
     zIndex: 1000,
   },
