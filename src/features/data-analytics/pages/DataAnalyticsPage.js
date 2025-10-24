@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { InfluencerTable } from '../components/InfluencerTable';
 import { FilterPanel } from '../components/FilterPanel';
-import { KPICards } from '../components/KPICards';
 import { mockInfluencerData } from '../data/mockData';
 
 const DataAnalyticsPage = () => {
   const [influencers, setInfluencers] = useState([]);
   const [filteredInfluencers, setFilteredInfluencers] = useState([]);
   const [filters, setFilters] = useState({
-    scope: 'all',
     timeRange: '30d',
     platform: 'douyin',
     dataDimension: 'fans,views'
@@ -24,22 +22,6 @@ const DataAnalyticsPage = () => {
   // 处理筛选逻辑
   useEffect(() => {
     let filtered = [...influencers];
-
-    // 按范围筛选
-    if (filters.scope !== 'all') {
-      filtered = filtered.filter(inf => {
-        switch (filters.scope) {
-          case 'cooperating':
-            return inf.status === 'cooperating';
-          case 'completed':
-            return inf.status === 'completed';
-          case 'mine':
-            return inf.owner === 'mine';
-          default:
-            return true;
-        }
-      });
-    }
 
     // 按搜索关键词筛选
     if (searchQuery) {
@@ -69,9 +51,6 @@ const DataAnalyticsPage = () => {
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
       />
-
-      {/* KPI 卡片 */}
-      <KPICards influencers={filteredInfluencers} />
 
       {/* 达人数据表格 */}
       <InfluencerTable 

@@ -11,13 +11,8 @@ const LeftSidebar = () => {
         {copy.navigation.newConversation}
       </button>
       
-      {/* 竞品视频跟踪 */}
-      <div style={styles.section}>
-        <div style={styles.sectionTitle}>{copy.navigation.competitorTracking}</div>
-      </div>
-      
       {/* 历史对话 */}
-      <div style={styles.sectionLarge}>
+      <div style={styles.section}>
         <div style={styles.sectionTitle}>{copy.navigation.historyConversations}</div>
         <div style={styles.conversationList}>
           {copy.historyConversations.map((conversation, index) => (
@@ -34,74 +29,64 @@ const LeftSidebar = () => {
 
 const styles = {
   sidebar: {
-    width: '220px',
-    height: '100vh',
-    backgroundColor: designTokens.colors.gray[50],
-    padding: designTokens.spacing.lg,
+    width: '210px',
+    backgroundColor: '#ffffff',
+    padding: '20px',
     display: 'flex',
     flexDirection: 'column',
-    gap: designTokens.spacing.lg,
-    borderRight: `1px solid ${designTokens.colors.gray[200]}`,
+    gap: '16px',
   },
   
   newConversationButton: {
-    width: '100%',
-    padding: `${designTokens.spacing.md} ${designTokens.spacing.lg}`,
-    backgroundColor: designTokens.colors.gray[100],
-    border: 'none',
-    borderRadius: '999px',
-    fontSize: designTokens.typography.fontSize.base,
-    fontWeight: designTokens.typography.fontWeight.semibold,
-    color: designTokens.colors.gray[800],
-    cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: designTokens.spacing.sm,
-    transition: 'all 0.2s ease',
-    boxShadow: designTokens.shadows.md,
+    gap: '8px',
+    backgroundColor: '#E7EEFD',
+    color: '#1356F0',
+    border: 'none',
+    borderRadius: '20px',
+    padding: '12px 16px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
   },
   
   plusIcon: {
-    fontSize: designTokens.typography.fontSize.lg,
-    fontWeight: designTokens.typography.fontWeight.bold,
+    fontSize: '16px',
+    fontWeight: 'bold',
   },
   
   section: {
     display: 'flex',
     flexDirection: 'column',
-    gap: designTokens.spacing.sm,
-  },
-  sectionLarge: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: designTokens.spacing.sm,
-    marginTop: designTokens.spacing['3xl'],
+    gap: '8px',
+    marginTop: '8px',
   },
   
   sectionTitle: {
-    fontSize: designTokens.typography.fontSize.base,
-    fontWeight: designTokens.typography.fontWeight.semibold,
-    color: designTokens.colors.gray[500],
-    marginTop: designTokens.spacing.lg,
-    marginBottom: designTokens.spacing.sm,
+    fontSize: '12px',
+    color: '#999',
+    fontWeight: '500',
+    marginBottom: '4px',
     textAlign: 'left',
   },
   
   conversationList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: designTokens.spacing.md,
-    paddingTop: designTokens.spacing.sm,
+    gap: '8px',
+    marginTop: '8px',
   },
   
   conversationItem: {
-    padding: `${designTokens.spacing.sm} 0`,
-    fontSize: designTokens.typography.fontSize.base,
-    color: designTokens.colors.gray[700],
+    fontSize: '14px',
+    color: '#374151',
     cursor: 'pointer',
-    transition: 'color 0.2s ease',
+    padding: '6px 0',
     textAlign: 'left',
+    fontWeight: '500',
+    transition: 'color 0.2s ease',
   },
   
 };
@@ -111,13 +96,14 @@ Object.assign(styles, {
   newConversationButton: {
     ...styles.newConversationButton,
     ':hover': {
-      backgroundColor: designTokens.colors.gray[200],
+      backgroundColor: '#D1E0FF',
+      transform: 'translateY(-1px)',
     }
   },
   conversationItem: {
     ...styles.conversationItem,
     ':hover': {
-      color: designTokens.colors.gray[900],
+      color: '#3b82f6',
     }
   },
 });

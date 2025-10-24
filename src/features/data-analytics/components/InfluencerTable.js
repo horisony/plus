@@ -211,38 +211,6 @@ export const InfluencerTable = ({ influencers, onInfluencerSelect }) => {
                     >
                       归因报告
                     </button>
-                    <button 
-                      style={styles.actionButton}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#e5e7eb';
-                        e.target.style.borderColor = '#d1d5db';
-                        e.target.style.color = '#1f2937';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#e5e7eb';
-                        e.target.style.color = '#374151';
-                      }}
-                      onClick={() => console.log('日程表', influencer)}
-                    >
-                      日程表
-                    </button>
-                    <button 
-                      style={styles.actionButton}
-                      onMouseEnter={(e) => {
-                        e.target.style.backgroundColor = '#e5e7eb';
-                        e.target.style.borderColor = '#d1d5db';
-                        e.target.style.color = '#1f2937';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = '#f9fafb';
-                        e.target.style.borderColor = '#e5e7eb';
-                        e.target.style.color = '#374151';
-                      }}
-                      onClick={() => console.log('预警战报', influencer)}
-                    >
-                      预警战报
-                    </button>
                   </div>
                 </td>
               </tr>

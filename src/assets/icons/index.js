@@ -1,0 +1,33 @@
+// SVG图标组件
+import React from 'react';
+import fileSvg from './file.svg';
+import imageSvg from './image.svg';
+import videoSvg from './video.svg';
+import plusSvg from './plus.svg';
+import sendSvg from './send.svg';
+
+export const FileIcon = (props) => (
+  <img src={fileSvg} alt="file" width="20" height="20" {...props} />
+);
+
+export const AttachmentIcon = (props) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+    <path d="M21.44 11.05L12.25 20.24C11.1242 21.3658 9.59722 21.9983 8.005 21.9983C6.41278 21.9983 4.88583 21.3658 3.76 20.24C2.63417 19.1142 2.00167 17.5872 2.00167 15.995C2.00167 14.4028 2.63417 12.8758 3.76 11.75L12.95 2.56C13.7006 1.80944 14.7186 1.38787 15.78 1.38787C16.8414 1.38787 17.8594 1.80944 18.61 2.56C19.3606 3.31056 19.7821 4.32856 19.7821 5.39C19.7821 6.45144 19.3606 7.46944 18.61 8.22L9.41 17.42C9.03444 17.7956 8.53056 18.0083 8.005 18.0083C7.47944 18.0083 6.97556 17.7956 6.6 17.42C6.22444 17.0444 6.01167 16.5406 6.01167 16.015C6.01167 15.4894 6.22444 14.9856 6.6 14.61L15.29 5.93" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+export const ImageIcon = (props) => (
+  <img src={imageSvg} alt="image" width="20" height="20" {...props} />
+);
+
+export const VideoIcon = (props) => (
+  <img src={videoSvg} alt="video" width="20" height="20" {...props} />
+);
+
+export const PlusIcon = (props) => (
+  <img src={plusSvg} alt="plus" width="20" height="20" {...props} />
+);
+
+export const SendIcon = (props) => (
+  <img src={sendSvg} alt="send" width="20" height="20" {...props} />
+);

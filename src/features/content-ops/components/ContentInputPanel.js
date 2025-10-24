@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { AiOutlinePaperClip, AiOutlinePicture, AiOutlineVideoCamera, AiOutlineSend } from 'react-icons/ai';
 import { designTokens } from '../constants/designTokens';
 import copy from '../constants/copy.zh-CN.json';
+import arrowDownSvg from '../../../assets/icons/arrow_down.svg';
 
 const ContentInputPanel = ({ onSendMessage, isGenerating, onStop, hasMessages = false }) => {
-  const [activeTab, setActiveTab] = useState('shortVideo');
+  const [activeTab, setActiveTab] = useState(null);
   const [message, setMessage] = useState('');
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [mentionPosition, setMentionPosition] = useState({ top: 0, left: 0 });
@@ -292,22 +293,40 @@ const ContentInputPanel = ({ onSendMessage, isGenerating, onStop, hasMessages = 
       {/* Tab 放在输入框外面 */}
       <div style={styles.tabsContainer}>
         <button 
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'shortVideo' ? styles.activeTab : {})
+          style={styles.tab}
+          onClick={() => {
+            setMessage('写一段关于"中药手串制作过程"的文案，语言温柔、有画面感、带东方气息。内容包括：选材（如沉香、檀香、陈皮、黄芪等）、泡制、晾晒、打磨、穿线五个步骤，描写过程的香气、质感和宁静氛围。字数控制在300字以内，风格要像小红书或纪录片旁白，传递慢生活与疗愈感，结尾加一句富有诗意的总结句，例如"香气，是植物留给人类的温柔记忆。"');
           }}
-          onClick={() => setActiveTab('shortVideo')}
         >
-          {copy.quickPrompts.shortVideo}
+          中药手串的制作过程
+          <img src={arrowDownSvg} alt="arrow" style={styles.arrowIcon} />
         </button>
         <button 
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'liveStream' ? styles.activeTab : {})
+          style={styles.tab}
+          onClick={() => {
+            setMessage('写一段关于"用商业采访来做家居"的文案，语言温柔、有画面感、带东方气息。内容包括：选材（如沉香、檀香、陈皮、黄芪等）、泡制、晾晒、打磨、穿线五个步骤，描写过程的香气、质感和宁静氛围。字数控制在300字以内，风格要像小红书或纪录片旁白，传递慢生活与疗愈感，结尾加一句富有诗意的总结句，例如"香气，是植物留给人类的温柔记忆。"');
           }}
-          onClick={() => setActiveTab('liveStream')}
         >
-          {copy.quickPrompts.liveStream}
+          用商业采访来做家居
+          <img src={arrowDownSvg} alt="arrow" style={styles.arrowIcon} />
+        </button>
+        <button 
+          style={styles.tab}
+          onClick={() => {
+            setMessage('写一段关于"70平房子装修花了多少钱"的文案，语言温柔、有画面感、带东方气息。内容包括：选材（如沉香、檀香、陈皮、黄芪等）、泡制、晾晒、打磨、穿线五个步骤，描写过程的香气、质感和宁静氛围。字数控制在300字以内，风格要像小红书或纪录片旁白，传递慢生活与疗愈感，结尾加一句富有诗意的总结句，例如"香气，是植物留给人类的温柔记忆。"');
+          }}
+        >
+          70平房子装修花了多少钱
+          <img src={arrowDownSvg} alt="arrow" style={styles.arrowIcon} />
+        </button>
+        <button 
+          style={styles.tab}
+          onClick={() => {
+            setMessage('写一段关于"创业如何从0做到100w"的文案，语言温柔、有画面感、带东方气息。内容包括：选材（如沉香、檀香、陈皮、黄芪等）、泡制、晾晒、打磨、穿线五个步骤，描写过程的香气、质感和宁静氛围。字数控制在300字以内，风格要像小红书或纪录片旁白，传递慢生活与疗愈感，结尾加一句富有诗意的总结句，例如"香气，是植物留给人类的温柔记忆。"');
+          }}
+        >
+          创业如何从0做到100w
+          <img src={arrowDownSvg} alt="arrow" style={styles.arrowIcon} />
         </button>
       </div>
       
@@ -459,7 +478,7 @@ const ContentInputPanel = ({ onSendMessage, isGenerating, onStop, hasMessages = 
 
 const styles = {
   wrapper: {
-    maxWidth: 840,
+    maxWidth: 880,
     margin: '0 auto',
   },
   
@@ -471,21 +490,29 @@ const styles = {
   },
   
   tab: {
-    padding: `${designTokens.spacing.md} ${designTokens.spacing.lg}`,
-    border: `1px solid ${designTokens.colors.gray[200]}`,
-    borderRadius: '999px',
-    backgroundColor: designTokens.colors.white,
-    color: designTokens.colors.gray[700],
-    fontSize: designTokens.typography.fontSize.sm,
-    fontWeight: designTokens.typography.fontWeight.medium,
+    padding: '8px 12px',
+    backgroundColor: '#EBEBEB',
+    border: '1px solid #CCCCCC',
+    borderRadius: '8px',
+    color: '#666666',
+    fontSize: '13px',
+    fontWeight: '500',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+    boxShadow: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+  
+  arrowIcon: {
+    width: '12px',
+    height: '12px',
   },
   
   activeTab: {
-    backgroundColor: designTokens.colors.gray[100],
-    color: designTokens.colors.gray[900],
+    backgroundColor: '#D9D9D9',
+    color: '#374151',
     fontWeight: designTokens.typography.fontWeight.semibold,
   },
   
@@ -641,9 +668,9 @@ const styles = {
   toolButton: {
     width: '40px',
     height: '40px',
-    border: `1px solid ${designTokens.colors.gray[200]}`,
+    border: 'none',
     borderRadius: designTokens.borderRadius.md,
-    backgroundColor: designTokens.colors.white,
+    backgroundColor: 'transparent',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -713,7 +740,6 @@ Object.assign(styles, {
     ...styles.toolButton,
     ':hover': {
       backgroundColor: designTokens.colors.gray[50],
-      borderColor: designTokens.colors.gray[300],
     }
   },
   pauseButton: {

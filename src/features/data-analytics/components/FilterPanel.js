@@ -1,12 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const FilterPanel = ({ filters, onFilterChange, searchQuery, onSearchChange }) => {
-  const scopeOptions = [
-    { value: 'all', label: '全部' },
-    { value: 'cooperating', label: '合作中' },
-    { value: 'completed', label: '已完成' },
-    { value: 'mine', label: '我名下的' }
-  ];
+  const navigate = useNavigate();
+
+  const handleAIAnalysisClick = () => {
+    navigate('/ai-analysis-chat');
+  };
 
   const timeRangeOptions = [
     { value: '7d', label: '近7天' },
@@ -29,24 +29,6 @@ export const FilterPanel = ({ filters, onFilterChange, searchQuery, onSearchChan
     <div style={styles.container}>
       {/* 单行横向排列所有筛选器 */}
       <div style={styles.filterRow}>
-        {/* 达人范围 */}
-        <div style={styles.filterGroup}>
-          <div style={styles.filterLabel}>达人范围</div>
-          <div style={styles.scopeButtons}>
-            {scopeOptions.map(option => (
-              <button
-                key={option.value}
-                style={{
-                  ...styles.scopeButton,
-                  ...(filters.scope === option.value && styles.activeScopeButton)
-                }}
-                onClick={() => onFilterChange({ scope: option.value })}
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* 时间范围 */}
         <div style={styles.filterItem}>
@@ -111,6 +93,14 @@ export const FilterPanel = ({ filters, onFilterChange, searchQuery, onSearchChan
             />
           </div>
         </div>
+
+        {/* AI数据分析按钮 */}
+        <button style={styles.aiAnalysisButton} onClick={handleAIAnalysisClick}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={styles.messageIcon}>
+            <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          AI数据分析
+        </button>
       </div>
     </div>
   );
@@ -132,36 +122,11 @@ const styles = {
     flexWrap: 'nowrap',
     width: '100%',
   },
-  filterGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
   filterLabel: {
     fontSize: '14px',
     fontWeight: '500',
     color: '#374151',
     whiteSpace: 'nowrap',
-  },
-  scopeButtons: {
-    display: 'flex',
-    gap: '8px',
-  },
-  scopeButton: {
-    padding: '8px 16px',
-    border: '1px solid #d1d5db',
-    borderRadius: '6px',
-    backgroundColor: '#fff',
-    color: '#374151',
-    fontSize: '14px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    whiteSpace: 'nowrap',
-  },
-  activeScopeButton: {
-    backgroundColor: '#e0f2fe', // 淡蓝色背景
-    color: '#0277bd', // 蓝色文字
-    borderColor: '#81d4fa', // 淡蓝色边框
   },
   filterItem: {
     display: 'flex',
@@ -200,5 +165,24 @@ const styles = {
     fontSize: '14px',
     outline: 'none',
     transition: 'border-color 0.2s ease',
+  },
+  aiAnalysisButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 16px',
+    backgroundColor: '#3b82f6',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    whiteSpace: 'nowrap',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+  },
+  messageIcon: {
+    color: '#fff',
   },
 };

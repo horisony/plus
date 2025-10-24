@@ -105,48 +105,18 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
         <LeftSidebar />
         
         {/* 主内容区域 */}
-        <div style={{
-          ...styles.mainContent,
-          justifyContent: messages.length > 0 ? 'space-between' : 'flex-start'
-        }}>
-        {/* 对话区域：只有产生对话后才显示，避免首屏大空白 */}
-        {messages.length > 0 && (
-          <div id="conversation-scroll" style={styles.conversationArea}>
-            {messages.map((message) => (
-                <div
-                  key={message.id}
-                  style={{
-                    ...styles.messageBubble,
-                    ...(message.type === 'user' ? styles.userMessage : styles.aiMessage)
-                  }}
-                >
-                  <div style={styles.messageContent}>
-                    {message.content}
-                  </div>
-                  {message.type === 'ai' && isGenerating && (
-                    <div style={styles.generatingIndicator}>
-                      <div style={styles.typingDots}>
-                        <span></span><span></span><span></span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-            ))}
+        <div style={styles.chatArea}>
+          {/* 输入面板 - 始终显示在顶部 */}
+          <div style={styles.inputContainer}>
+            <ContentInputPanel 
+              onSendMessage={handleSendMessage}
+              isGenerating={isGenerating}
+              onStop={handleStopGeneration}
+              hasMessages={messages.length > 0}
+            />
           </div>
-        )}
-        
-        {/* 输入面板 */}
-        <div style={styles.inputSection}>
-          <ContentInputPanel 
-            onSendMessage={handleSendMessage}
-            isGenerating={isGenerating}
-            onStop={handleStopGeneration}
-            hasMessages={messages.length > 0}
-          />
-        </div>
-        
-        {/* 底部四卡片推荐区域：只在没有消息时显示 */}
-        {messages.length === 0 && (
+          
+          {/* 四卡片推荐区域 - 始终显示在输入框下方 */}
           <div style={styles.recommendationsSection}>
             <div style={styles.cardsGrid4}>
             <div>
@@ -187,10 +157,12 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
                         e.dataTransfer.setData('text/plain', item);
                         e.target.style.opacity = '0.5';
                         e.target.style.transform = 'scale(0.95)';
+                        e.target.style.backgroundColor = '#E7EEFD';
                       }}
                       onDragEnd={(e) => {
                         e.target.style.opacity = '1';
                         e.target.style.transform = 'scale(1)';
+                        e.target.style.backgroundColor = '';
                       }}
                     >
                       {item}
@@ -212,10 +184,12 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
                         e.dataTransfer.setData('text/plain', item);
                         e.target.style.opacity = '0.5';
                         e.target.style.transform = 'scale(0.95)';
+                        e.target.style.backgroundColor = '#E7EEFD';
                       }}
                       onDragEnd={(e) => {
                         e.target.style.opacity = '1';
                         e.target.style.transform = 'scale(1)';
+                        e.target.style.backgroundColor = '';
                       }}
                     >
                       {item}
@@ -245,10 +219,12 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
                         e.dataTransfer.setData('text/plain', item);
                         e.target.style.opacity = '0.5';
                         e.target.style.transform = 'scale(0.95)';
+                        e.target.style.backgroundColor = '#E7EEFD';
                       }}
                       onDragEnd={(e) => {
                         e.target.style.opacity = '1';
                         e.target.style.transform = 'scale(1)';
+                        e.target.style.backgroundColor = '';
                       }}
                     >
                       {item}
@@ -309,15 +285,28 @@ const styles = {
     overflow: 'hidden', // 防止内容溢出
   },
   
-  mainContent: {
+  chatArea: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    padding: `${designTokens.spacing['2xl']} ${designTokens.spacing['3xl']}`,
-    gap: designTokens.spacing['2xl'],
-    overflow: 'hidden', // 防止整个页面滚动
-    height: '100%', // 限制高度
-    maxHeight: '100%', // 确保不超过父容器高度
+    backgroundColor: '#f5f7fa',
+    maxWidth: '880px',
+    margin: '0 auto',
+    padding: '20px',
+  },
+  
+  messagesContainer: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    overflowY: 'auto',
+    marginBottom: '20px',
+  },
+  
+  inputContainer: {
+    flexShrink: 0,
+    marginBottom: '0',
   },
   
   conversationArea: {
@@ -345,20 +334,26 @@ const styles = {
   
   messageBubble: {
     maxWidth: '70%',
-    padding: `${designTokens.spacing.lg} ${designTokens.spacing.xl}`,
-    borderRadius: designTokens.borderRadius.xl,
-    boxShadow: designTokens.shadows.sm,
+    padding: '12px 16px',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    wordWrap: 'break-word',
+    whiteSpace: 'pre-line',
+    textAlign: 'left',
   },
   
   userMessage: {
+    backgroundColor: '#E7EEFD',
+    color: '#333',
     alignSelf: 'flex-end',
-    backgroundColor: designTokens.colors.accent.yellow,
+    borderRadius: '12px 6px 12px 12px',
   },
   
   aiMessage: {
+    backgroundColor: '#ffffff',
+    color: '#374151',
     alignSelf: 'flex-start',
-    backgroundColor: designTokens.colors.white,
-    border: `1px solid ${designTokens.colors.gray[200]}`,
+    borderRadius: '6px 12px 12px 12px',
   },
   
   messageContent: {
@@ -396,31 +391,32 @@ const styles = {
   },
   
   recommendationsSection: {
-    flexShrink: 0, // 防止被挤压
+    flexShrink: 0,
     display: 'flex',
     flexDirection: 'column',
+    marginTop: '24px',
   },
   
   cardsGrid4: {
     display: 'grid',
     gridTemplateColumns: 'repeat(4, 1fr)',
-    gap: designTokens.spacing['3xl'],
+    gap: '20px',
   },
   cardBox: {
-    backgroundColor: designTokens.colors.white,
-    borderRadius: '16px',
-    boxShadow: designTokens.shadows.lg,
-    padding: designTokens.spacing.lg,
-    height: 360, // 固定高度，确保所有屏幕下一致
+    backgroundColor: '#ffffff',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+    padding: '16px',
+    height: '300px',
     display: 'flex',
     flexDirection: 'column',
-    overflow: 'hidden', // 防止内容溢出
+    overflow: 'hidden',
   },
   cardTitleOutside: {
-    fontWeight: designTokens.typography.fontWeight.semibold,
-    color: designTokens.colors.gray[800],
-    marginBottom: designTokens.spacing.lg, // 标题与卡片间距更大
-    paddingLeft: designTokens.spacing.xs,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: '12px',
+    fontSize: '14px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -438,17 +434,17 @@ const styles = {
     marginBottom: designTokens.spacing.md,
   },
   cardItem: {
-    padding: `${designTokens.spacing.md} 0`,
-    color: designTokens.colors.gray[700],
-    fontSize: designTokens.typography.fontSize.base, // 增大字体
-    cursor: 'grab',
-    marginBottom: designTokens.spacing.md, // 增大间距
-    borderBottom: `1px solid ${designTokens.colors.gray[100]}`,
+    padding: '8px 0',
+    color: '#6b7280',
+    fontSize: '13px',
+    cursor: 'pointer',
+    marginBottom: '8px',
+    borderBottom: '1px solid #f3f4f6',
     transition: 'all 0.2s ease',
     borderRadius: '4px',
-    paddingLeft: designTokens.spacing.xs,
-    paddingRight: designTokens.spacing.xs,
-    lineHeight: '1.6', // 增加行高
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    lineHeight: '1.5',
   },
   
   'cardItem:hover': {
@@ -476,10 +472,10 @@ const styles = {
   addSnippetButton: {
     backgroundColor: 'transparent',
     border: 'none',
-    color: designTokens.colors.primary,
-    fontSize: designTokens.typography.fontSize.sm,
+    color: '#3b82f6',
+    fontSize: '12px',
     cursor: 'pointer',
-    padding: `${designTokens.spacing.xs} ${designTokens.spacing.sm}`,
+    padding: '2px 6px',
     borderRadius: '4px',
     transition: 'background-color 0.2s ease',
   },
@@ -492,17 +488,17 @@ const styles = {
   },
 
   inspirationItem: {
-    padding: `${designTokens.spacing.md} 0`,
-    color: designTokens.colors.gray[700],
-    fontSize: designTokens.typography.fontSize.sm,
-    cursor: 'grab',
-    marginBottom: designTokens.spacing.xl, // 增大间距
-    borderBottom: `1px solid ${designTokens.colors.gray[100]}`,
+    padding: '8px 0',
+    color: '#6b7280',
+    fontSize: '12px',
+    cursor: 'pointer',
+    marginBottom: '12px',
+    borderBottom: '1px solid #f3f4f6',
     transition: 'all 0.2s ease',
     borderRadius: '4px',
-    paddingLeft: designTokens.spacing.xs,
-    paddingRight: designTokens.spacing.xs,
-    lineHeight: '1.6',
+    paddingLeft: '4px',
+    paddingRight: '4px',
+    lineHeight: '1.4',
   },
   
   paginationContainer: {
@@ -659,3 +655,4 @@ Object.assign(styles, {
 });
 
 export default ContentOpsPage;
+

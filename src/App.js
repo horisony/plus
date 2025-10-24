@@ -8,6 +8,7 @@ import CommercialDashboard from './features/commercial/CommercialDashboard';
 import ProjectDetail from './features/commercial/ProjectDetail';
 import MarketingCampaign from './features/commercial/MarketingCampaign';
 import ChatPage from './features/chat/ChatPage';
+import AIAnalysisChatPage from './features/chat/AIAnalysisChatPage';
 import TopNavbar from './TopNavbar';
 import { ContentOpsPage } from './features/content-ops';
 import InspirationSnippetsPage from './features/content-ops/pages/InspirationSnippetsPage';
@@ -40,7 +41,9 @@ function App() {
   // 首次加载与每次路由变更时，让顶部 tab 与 URL 同步
   useEffect(() => {
     const { pathname } = location;
-    if (pathname.startsWith('/content-ops')) {
+    if (pathname.startsWith('/ai-analysis-chat')) {
+      setActiveTab('data'); // 聊天页面显示为AI数据管家
+    } else if (pathname.startsWith('/content-ops')) {
       setActiveTab('content');
     } else if (pathname.startsWith('/commercial')) {
       setActiveTab('commercial');
@@ -86,6 +89,7 @@ function App() {
         <Route path="/marketing-campaign" element={<MarketingCampaign />} />
         <Route path="/marketing-campaign/:projectId" element={<MarketingCampaign />} />
         <Route path="/chat/:conversationId" element={<ChatPage />} />
+        <Route path="/ai-analysis-chat" element={<AIAnalysisChatPage />} />
         <Route path="/edit-avatar/:userId" element={<EditAvatar />} />
         <Route path="/user-dashboard" element={<UserAIAgentDashboard />} />
         <Route path="/warnings/:type" element={<WarningCardDetail />} />

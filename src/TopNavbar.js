@@ -12,9 +12,9 @@ const TopNavbar = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
 
   const tabs = [
-    { key: 'data', label: '智慧数据管家' },
-    { key: 'content', label: '内容运营' },
-    { key: 'commercial', label: '商业化' },
+    { key: 'data', label: 'AI 数据管家' },
+    { key: 'content', label: 'AI 内容厨房' },
+    { key: 'commercial', label: 'AI 商业助理' },
     { key: 'ai', label: 'AI 经纪人' }
   ];
 
@@ -24,7 +24,7 @@ const TopNavbar = ({
       <div style={styles.navLeft}>
         <div style={styles.logoContainer}>
           <img src="/brand/PLUSCO-logo.png" alt="PLUSCO" style={styles.logoImage} />
-          <span style={styles.brandName}>PLUSCO</span>
+          <span style={styles.brandName}>PLUSMCN</span>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ const styles = {
   brandName: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#171360',
   },
   navCenter: {
     marginLeft: 'auto',
