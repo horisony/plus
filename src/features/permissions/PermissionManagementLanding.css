@@ -1,0 +1,142 @@
+.permission-layout {
+  display: flex;
+  height: calc(100vh - 80px);
+  background-color: #f5f7fa;
+}
+
+.permission-layout--with-sidebar {
+  align-items: stretch;
+}
+
+.permission-tab-sidebar {
+  width: 220px;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #ffffff;
+  border-right: 1px solid #e5e7eb;
+}
+
+.permission-tab-header {
+  padding: 0 24px;
+}
+
+.permission-tab-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.permission-tab-item {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  padding: 14px 24px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1f2937;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.permission-tab-item:hover {
+  background-color: #f1f5f9;
+}
+
+.permission-tab-item--active {
+  background-color: #e6f0ff;
+  border-left: 3px solid #2563eb;
+  color: #1d4ed8;
+  padding-left: 21px;
+}
+
+.permission-tab-item--active .permission-tab-label {
+  color: #1d4ed8;
+}
+
+.permission-tab-label {
+  font-weight: 500;
+}
+
+.permission-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 40px;
+  overflow: hidden;
+}
+
+.permission-main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.permission-main-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.permission-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+}
+
+.permission-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.permission-table .ant-table-tbody > tr > td {
+  vertical-align: top;
+}
+
+.permission-department-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 4px;
+}
+
+.permission-department-detail__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.permission-department-detail__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.permission-department-detail__tabs {
+  display: flex;
+  gap: 12px;
+}
+
+.permission-department-detail__section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: #f8fafc;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+.permission-table-toolbar--inner {
+  padding: 0;
+}
