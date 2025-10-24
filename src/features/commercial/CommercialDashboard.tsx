@@ -394,283 +394,77 @@ const FilterBar: React.FC<FilterBarProps> = ({
     <div style={styles.filterSection}>
       <div style={styles.filterRow}>
         <div style={styles.filterGroup}>
-          <label style={styles.filterLabel}>用户角色</label>
+          <label style={styles.filterLabel}>品牌</label>
           <select 
-            value={selectedRole}
-            onChange={(e) => onRoleChange(e.target.value as RoleType)}
+            value={filters.brand}
+            onChange={(e) => onFilterChange('brand', e.target.value)}
             style={styles.filterSelect}
+            disabled={loading.brands}
           >
-            <option value="mcn_talent">MCN达人</option>
-            <option value="brand">品牌方</option>
-            <option value="mcn">MCN机构</option>
+            <option value="all">全部</option>
+            {brands.map(brand => (
+              <option key={brand} value={brand}>{brand}</option>
+            ))}
           </select>
         </div>
 
-        {isBrandRole ? (
-          <>
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>预计下单时间</label>
-              <select
-                value={filters.orderTimeRange}
-                onChange={(e) => onFilterChange('orderTimeRange', e.target.value as OrderPublishRange)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部时间</option>
-                <option value="within_15_days">15天内</option>
-                <option value="within_30_days">30天内</option>
-                <option value="within_60_days">60天内</option>
-              </select>
-            </div>
+        <div style={styles.filterGroup}>
+          <label style={styles.filterLabel}>预计下单时间</label>
+          <select
+            value={filters.orderTimeRange}
+            onChange={(e) => onFilterChange('orderTimeRange', e.target.value as OrderPublishRange)}
+            style={styles.filterSelect}
+          >
+            <option value="all">全部时间</option>
+            <option value="within_15_days">15天内</option>
+            <option value="within_30_days">30天内</option>
+            <option value="within_60_days">60天内</option>
+          </select>
+        </div>
 
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>预计发布时间</label>
-              <select
-                value={filters.publishTimeRange}
-                onChange={(e) => onFilterChange('publishTimeRange', e.target.value as OrderPublishRange)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部时间</option>
-                <option value="within_15_days">15天内</option>
-                <option value="within_30_days">30天内</option>
-                <option value="within_60_days">60天内</option>
-              </select>
-            </div>
+        <div style={styles.filterGroup}>
+          <label style={styles.filterLabel}>预计发布时间</label>
+          <select
+            value={filters.publishTimeRange}
+            onChange={(e) => onFilterChange('publishTimeRange', e.target.value as OrderPublishRange)}
+            style={styles.filterSelect}
+          >
+            <option value="all">全部时间</option>
+            <option value="within_15_days">15天内</option>
+            <option value="within_30_days">30天内</option>
+            <option value="within_60_days">60天内</option>
+          </select>
+        </div>
 
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>进度</label>
-              <select
-                value={filters.progressStage}
-                onChange={(e) => onFilterChange('progressStage', e.target.value as ProgressStage)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部进度</option>
-                <option value="0_25">0-25%</option>
-                <option value="25_50">25-50%</option>
-                <option value="50_75">50-75%</option>
-                <option value="75_100">75-100%</option>
-                <option value="completed">已完成</option>
-              </select>
-            </div>
+        <div style={styles.filterGroup}>
+          <label style={styles.filterLabel}>报价形式</label>
+          <select
+            value={filters.quoteType}
+            onChange={(e) => onFilterChange('quoteType', e.target.value as ProjectFilters['quoteType'])}
+            style={styles.filterSelect}
+          >
+            <option value="all">全部类型</option>
+            <option value="CPM">CPM</option>
+            <option value="CPC">CPC</option>
+            <option value="CPA">CPA</option>
+          </select>
+        </div>
 
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>报价形式</label>
-              <select
-                value={filters.quoteType}
-                onChange={(e) => onFilterChange('quoteType', e.target.value as ProjectFilters['quoteType'])}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部类型</option>
-                <option value="CPM">CPM</option>
-                <option value="CPC">CPC</option>
-                <option value="CPA">CPA</option>
-              </select>
-            </div>
-
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>活动/产品搜索</label>
-              <input
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearchClick();
-                  }
-                }}
-                placeholder="输入活动名或产品名"
-                style={styles.filterInput}
-              />
-            </div>
-
-            <div style={styles.filterActions}>
-              <button type="button" style={styles.resetButton} onClick={handleReset}>
-                重置
-              </button>
-              <button type="button" style={styles.searchButton} onClick={handleSearchClick}>
-                搜索
-              </button>
-              <button 
-                type="button"
-                style={styles.campaignButton}
-                onClick={onCreateCampaign}
-              >
-                添加营销活动
-              </button>
-              <button 
-                type="button"
-                style={styles.aiAnalysisButton}
-                onClick={onAIDataAnalysis}
-              >
-                AI数据分析
-              </button>
-            </div>
-          </>
-        ) : isMCNTalentRole ? (
-          <>
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>品牌</label>
-              <select 
-                value={filters.brand}
-                onChange={(e) => onFilterChange('brand', e.target.value)}
-                style={styles.filterSelect}
-                disabled={loading.brands}
-              >
-                <option value="all">全部品牌</option>
-                {brands.map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-            </div>
-
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>预计下单时间</label>
-              <select
-                value={filters.orderTimeRange}
-                onChange={(e) => onFilterChange('orderTimeRange', e.target.value as OrderPublishRange)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部时间</option>
-                <option value="within_15_days">15天内</option>
-                <option value="within_30_days">30天内</option>
-                <option value="within_60_days">60天内</option>
-              </select>
-            </div>
-
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>预计发布时间</label>
-              <select
-                value={filters.publishTimeRange}
-                onChange={(e) => onFilterChange('publishTimeRange', e.target.value as OrderPublishRange)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部时间</option>
-                <option value="within_15_days">15天内</option>
-                <option value="within_30_days">30天内</option>
-                <option value="within_60_days">60天内</option>
-              </select>
-            </div>
-
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>报价形式</label>
-              <select
-                value={filters.quoteType}
-                onChange={(e) => onFilterChange('quoteType', e.target.value as ProjectFilters['quoteType'])}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部类型</option>
-                <option value="CPM">CPM</option>
-                <option value="CPC">CPC</option>
-                <option value="CPA">CPA</option>
-              </select>
-            </div>
-
-            <div style={styles.filterActions}>
-              <button type="button" style={styles.resetButton} onClick={handleReset}>
-                重置
-              </button>
-              <button 
-                type="button"
-                style={styles.searchButton} 
-                onClick={() => {
-                  if (onSearch) {
-                    onSearch();
-                  }
-                }}
-              >
-                搜索
-              </button>
-              <button 
-                type="button"
-                style={styles.aiAnalysisButton}
-                onClick={onAIDataAnalysis}
-              >
-                AI数据分析
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>品牌</label>
-              <select 
-                value={filters.brand}
-                onChange={(e) => onFilterChange('brand', e.target.value)}
-                style={styles.filterSelect}
-                disabled={loading.brands}
-              >
-                <option value="all">全部品牌</option>
-                {brands.map(brand => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-            </div>
-            
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>预计下单时间</label>
-              <select
-                value={filters.orderTimeRange}
-                onChange={(e) => onFilterChange('orderTimeRange', e.target.value as OrderPublishRange)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部时间</option>
-                <option value="within_15_days">15天内</option>
-                <option value="within_30_days">30天内</option>
-                <option value="within_60_days">60天内</option>
-              </select>
-            </div>
-
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>预计发布时间</label>
-              <select
-                value={filters.publishTimeRange}
-                onChange={(e) => onFilterChange('publishTimeRange', e.target.value as OrderPublishRange)}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部时间</option>
-                <option value="within_15_days">15天内</option>
-                <option value="within_30_days">30天内</option>
-                <option value="within_60_days">60天内</option>
-              </select>
-            </div>
-
-            <div style={styles.filterGroup}>
-              <label style={styles.filterLabel}>报价形式</label>
-              <select
-                value={filters.quoteType}
-                onChange={(e) => onFilterChange('quoteType', e.target.value as ProjectFilters['quoteType'])}
-                style={styles.filterSelect}
-              >
-                <option value="all">全部类型</option>
-                <option value="CPM">CPM</option>
-                <option value="CPC">CPC</option>
-                <option value="CPA">CPA</option>
-              </select>
-            </div>
-            
-            <div style={styles.filterActions}>
-              <button type="button" style={styles.resetButton} onClick={handleReset}>
-                重置
-              </button>
-              <button 
-                type="button"
-                style={styles.searchButton}
-                onClick={() => {
-                  if (onSearch) {
-                    onSearch();
-                  }
-                }}
-              >
-                搜索
-              </button>
-              <button 
-                type="button"
-                style={styles.aiAnalysisButton}
-                onClick={onAIDataAnalysis}
-              >
-                AI数据分析
-              </button>
-            </div>
-          </>
-        )}
+        <div style={styles.filterActions}>
+          <button type="button" style={styles.resetButton} onClick={handleReset}>
+            重置
+          </button>
+          <button type="button" style={styles.searchButton} onClick={handleSearchClick}>
+            筛选
+          </button>
+          <button 
+            type="button"
+            style={styles.aiAnalysisButton}
+            onClick={onAIDataAnalysis}
+          >
+            AI 商单分析
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -679,43 +473,16 @@ const FilterBar: React.FC<FilterBarProps> = ({
 // 项目表格组件
 const ProjectTable: React.FC<ProjectTableProps> = ({ projects, loading, onAction, role }) => {
   const getTableConfig = (currentRole: RoleType): TableConfig => {
-    switch (currentRole) {
-      case 'mcn_talent':
-        return {
-          headers: ['品牌名称', '产品', '需求文档', '报价形式', '预计下单时间', '预计发布时间', '预算', '操作'],
-          actions: ['contact']
-        };
-      case 'mcn':
-        return {
-          headers: ['品牌名称', '产品', '报价形式', '预算', '预计下单时间', '预计发布时间', '需求博主数', '状态', '操作'],
-          actions: ['contact', 'detail']
-        };
-      case 'brand':
-        return {
-          headers: ['活动名称', '产品', '报价形式', '预计下单时间', '预计发布时间', '博主数', '博主要求', '进度', '操作'],
-          actions: ['detail']
-        };
-      default:
-        return {
-          headers: ['品牌名称', '产品', '报价形式', '预算', '预计下单时间', '预计发布时间', '需求博主数', '状态', '操作'],
-          actions: ['contact', 'detail']
-        };
-    }
+    return {
+      headers: ['品牌名称', '产品', '报价形式', '预算', '预计下单时间', '预计发布时间', '需求博主数', '状态', '操作'],
+      actions: ['contact', 'detail']
+    };
   };
 
   const tableConfig = getTableConfig(role);
 
   const getGridTemplateColumns = (currentRole: RoleType): string => {
-    switch (currentRole) {
-      case 'mcn_talent':
-        return '1fr 0.8fr 1.5fr 0.7fr 1fr 1fr 0.7fr 0.6fr';
-      case 'mcn':
-        return '1.2fr 1fr 0.8fr 0.8fr 1fr 1fr 0.8fr 0.8fr 1fr';
-      case 'brand':
-        return '1.2fr 1fr 0.8fr 1fr 1fr 0.8fr 1fr 0.8fr 0.8fr';
-      default:
-        return '1.2fr 1fr 0.8fr 0.8fr 1fr 1fr 0.8fr 0.8fr 1fr';
-    }
+    return '1.2fr 1fr 0.8fr 0.8fr 1fr 1fr 0.8fr 0.8fr 1fr';
   };
 
   const gridColumns = getGridTemplateColumns(role);
@@ -728,197 +495,62 @@ const ProjectTable: React.FC<ProjectTableProps> = ({ projects, loading, onAction
     const statusConfig = utils.getStatusConfig(project.status);
     const progressValue = project.progress ?? 0;
 
-    const commonCells = {
-      brandName: (
+    return (
+      <>
         <div style={styles.tableCell}>
-          <div style={styles.brandName}>{project.brand.name}</div>
+          <div style={styles.brandCell}>
+            <img src="/src/assets/icons/mi_logo.png" alt="MI" style={styles.tableBrandLogo} />
+            <div style={styles.brandName}>{project.brand.name}</div>
+          </div>
         </div>
-      ),
-      product: (
         <div style={styles.tableCell}>
           <span style={styles.productText}>{project.product}</span>
         </div>
-      ),
-      quoteType: (
         <div style={styles.tableCell}>
           <span style={styles.quoteType}>{project.quoteType}</span>
         </div>
-      ),
-      budget: (
         <div style={styles.tableCell}>
           <span style={styles.budget}>{utils.formatCurrency(project.budget)}</span>
         </div>
-      ),
-      orderTime: (
         <div style={styles.tableCell}>{utils.formatDate(project.orderTime)}</div>
-      ),
-      publishTime: (
         <div style={styles.tableCell}>{utils.formatDate(project.publishTime)}</div>
-      ),
-      bloggerCount: (
         <div style={styles.tableCell}>
-          <span style={styles.bloggerCount}>{project.bloggerCount}人</span>
+          <span style={styles.bloggerCount}>{project.bloggerCount}</span>
         </div>
-      ),
-      status: (
         <div style={styles.tableCell}>
           <div style={styles.statusCell}>
-            <div style={styles.statusIndicatorContainer}>
-              <div
-                style={{
-                  ...styles.statusIndicator,
-                  backgroundColor: statusConfig.color
-                }}
-              />
-              <span
-                style={{
-                  ...styles.statusText,
-                  color: statusConfig.color
-                }}
-              >
-                {statusConfig.text}
-              </span>
+            <div style={styles.progressContainer}>
+              <div style={styles.progressBar}>
+                <div
+                  style={{
+                    ...styles.progressFill,
+                    width: `${progressValue}%`,
+                    backgroundColor: statusConfig.color
+                  }}
+                />
+              </div>
             </div>
+            <span style={styles.statusText}>{statusConfig.text}</span>
           </div>
         </div>
-      ),
-      progress: (
         <div style={styles.tableCell}>
-          <div style={styles.progressContainer}>
-            <div style={styles.progressBar}>
-              <div
-                style={{
-                  ...styles.progressFill,
-                  width: `${progressValue}%`,
-                  backgroundColor: statusConfig.color
-                }}
-              />
-            </div>
-            <span style={styles.progressText}>{progressValue}%</span>
+          <div style={styles.actionCell}>
+            <button
+              style={styles.actionButton}
+              onClick={() => actionHandler('contact', project)}
+            >
+              沟通
+            </button>
+            <button
+              style={styles.actionButton}
+              onClick={() => actionHandler('detail', project)}
+            >
+              详情
+            </button>
           </div>
         </div>
-      )
-    };
-
-    switch (currentRole) {
-      case 'mcn_talent':
-        return (
-          <>
-            {commonCells.brandName}
-            {commonCells.product}
-            <div style={styles.tableCell}>
-              <button
-                type="button"
-                style={styles.linkButton}
-                onClick={() => actionHandler('viewDocument', project)}
-              >
-                https://docs.plusco.com/campaign/xiaomi-product-launch-2024-Q3-detailed-requirements.pdf
-              </button>
-            </div>
-            {commonCells.quoteType}
-            {commonCells.orderTime}
-            {commonCells.publishTime}
-            {commonCells.budget}
-            <div style={styles.tableCell}>
-              <button
-                style={styles.actionButton}
-                onClick={() => actionHandler('contact', project)}
-              >
-                沟通
-              </button>
-            </div>
-          </>
-        );
-      case 'mcn':
-        return (
-          <>
-            {commonCells.brandName}
-            {commonCells.product}
-            {commonCells.quoteType}
-            {commonCells.budget}
-            {commonCells.orderTime}
-            {commonCells.publishTime}
-            {commonCells.bloggerCount}
-            {commonCells.status}
-            <div style={styles.tableCell}>
-              <div style={styles.actionCell}>
-                <button
-                  style={styles.actionButton}
-                  onClick={() => actionHandler('contact', project)}
-                >
-                  💬 沟通
-                </button>
-                <button
-                  style={styles.actionButton}
-                  onClick={() => actionHandler('detail', project)}
-                >
-                  详情
-                </button>
-              </div>
-            </div>
-          </>
-        );
-      case 'brand':
-        return (
-          <>
-            <div style={styles.tableCell}>
-              <span style={styles.projectName}>
-                {project.activityName || `${project.product}推广活动`}
-              </span>
-            </div>
-            {commonCells.product}
-            {commonCells.quoteType}
-            {commonCells.orderTime}
-            {commonCells.publishTime}
-            {commonCells.bloggerCount}
-            <div style={styles.tableCell}>
-              <span style={styles.requirement}>
-                {project.bloggerRequirement || '粉丝量10W+，垂直领域'}
-              </span>
-            </div>
-            {commonCells.progress}
-            <div style={styles.tableCell}>
-              <div style={styles.actionCell}>
-                <button
-                  style={styles.actionButton}
-                  onClick={() => actionHandler('detail', project)}
-                >
-                  详情
-                </button>
-              </div>
-            </div>
-          </>
-        );
-      default:
-        return (
-          <>
-            {commonCells.brandName}
-            {commonCells.product}
-            {commonCells.quoteType}
-            {commonCells.budget}
-            {commonCells.orderTime}
-            {commonCells.publishTime}
-            {commonCells.bloggerCount}
-            {commonCells.status}
-            <div style={styles.tableCell}>
-              <div style={styles.actionCell}>
-                <button
-                  style={styles.actionButton}
-                  onClick={() => actionHandler('contact', project)}
-                >
-                  💬 沟通
-                </button>
-                <button
-                  style={styles.actionButton}
-                  onClick={() => actionHandler('detail', project)}
-                >
-                  详情
-                </button>
-              </div>
-            </div>
-          </>
-        );
-    }
+      </>
+    );
   };
 
   if (loading) {
@@ -1056,6 +688,7 @@ const CommercialDashboard: React.FC = () => {
           targetUserName: selectedRole === 'brand' ? '合作MCN' : project.brand.name,
           targetUserAvatar: '/PLUSCO-LOGO.jpg',
           conversationType: 'project_discussion',
+          activeTab: 'commercial',
         };
         navigate('/chat/new', { state: chatData });
         break;
@@ -1077,8 +710,6 @@ const CommercialDashboard: React.FC = () => {
 
   return (
     <div style={styles.container}>
-      <RoleInfoCard role={selectedRole} />
-
       <FilterBar
         filters={filters}
         brands={brands}
@@ -1206,6 +837,81 @@ const commercialApiService: CommercialApiService = {
         tags: ['运动鞋', '限量'],
         contactPerson: '陈总监',
         createdAt: '2025-10-05',
+      },
+      {
+        id: '6',
+        brand: { name: '阿迪达斯', logo: '🏃', industry: '运动' },
+        product: 'Ultraboost 22',
+        quoteType: 'CPM',
+        budget: 350000,
+        orderTime: '2025-09-18',
+        publishTime: '2025-10-18',
+        bloggerCount: 90,
+        status: 'pending',
+        progress: 25,
+        tags: ['跑鞋', '专业'],
+        contactPerson: '刘经理',
+        createdAt: '2025-10-07',
+      },
+      {
+        id: '7',
+        brand: { name: '特斯拉', logo: '🚗', industry: '汽车' },
+        product: 'Model Y',
+        quoteType: 'CPA',
+        budget: 1200000,
+        orderTime: '2025-09-30',
+        publishTime: '2025-10-30',
+        bloggerCount: 300,
+        status: 'in_progress',
+        progress: 45,
+        tags: ['电动车', '智能'],
+        contactPerson: '马总',
+        createdAt: '2025-10-10',
+      },
+      {
+        id: '8',
+        brand: { name: '可口可乐', logo: '🥤', industry: '饮料' },
+        product: '零度可乐',
+        quoteType: 'CPC',
+        budget: 180000,
+        orderTime: '2025-09-22',
+        publishTime: '2025-10-22',
+        bloggerCount: 60,
+        status: 'accepted',
+        progress: 100,
+        tags: ['饮料', '健康'],
+        contactPerson: '张总监',
+        createdAt: '2025-10-12',
+      },
+      {
+        id: '9',
+        brand: { name: '三星', logo: '📱', industry: '科技' },
+        product: 'Galaxy S24',
+        quoteType: 'CPM',
+        budget: 600000,
+        orderTime: '2025-09-28',
+        publishTime: '2025-10-28',
+        bloggerCount: 180,
+        status: 'in_progress',
+        progress: 80,
+        tags: ['手机', '旗舰'],
+        contactPerson: '金经理',
+        createdAt: '2025-10-15',
+      },
+      {
+        id: '10',
+        brand: { name: '联想', logo: '💻', industry: '科技' },
+        product: 'ThinkPad X1',
+        quoteType: 'CPA',
+        budget: 450000,
+        orderTime: '2025-10-05',
+        publishTime: '2025-11-05',
+        bloggerCount: 110,
+        status: 'pending',
+        progress: 15,
+        tags: ['笔记本', '商务'],
+        contactPerson: '杨总',
+        createdAt: '2025-10-18',
       },
     ];
 
@@ -1345,6 +1051,8 @@ const styles = {
     maxWidth: '1400px',
     margin: '0 auto',
     padding: '8px 20px',
+    backgroundColor: '#F8F8F8',
+    minHeight: '100vh',
   },
   
   // 角色信息卡片样式
@@ -1945,12 +1653,8 @@ const styles = {
   tableBrandLogo: {
     width: '24px',
     height: '24px',
-    borderRadius: '4px',
-    backgroundColor: '#f3f4f6',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '13px',
+    borderRadius: '50%',
+    marginRight: '8px',
   },
   brandName: {
     fontWeight: '500',

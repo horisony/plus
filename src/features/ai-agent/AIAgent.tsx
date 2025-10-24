@@ -55,41 +55,53 @@ const StatsSection: React.FC<{ stats: StatItem[] }> = ({ stats }) => (
   </div>
 );
 
-const TalentList: React.FC<{ talents: TalentItem[] }> = ({ talents }) => (
-  <div style={styles.talentListContainer}>
-    <div style={styles.talentTable}>
-      <div style={styles.talentTableHeader}>
-        <div style={styles.talentHeaderCell}>达人</div>
-        <div style={styles.talentHeaderCell}>心情状态</div>
-        <div style={styles.talentHeaderCell}>维度修改</div>
-        <div style={styles.talentHeaderCell}>带货</div>
-        <div style={styles.talentHeaderCell}>疑议条件</div>
-        <div style={styles.talentHeaderCell} />
-      </div>
+const TalentList: React.FC<{ talents: TalentItem[] }> = ({ talents }) => {
+  const navigate = useNavigate();
 
-      {talents.map((talent, index) => (
-        <div key={`${talent.name}-${index}`} style={styles.talentTableRow}>
-          <div style={styles.talentCell}>
-            <img src="/PLUSCO-LOGO.jpg" alt={talent.name} style={styles.talentAvatar} />
-            <div style={styles.talentInfo}>
-              <div style={styles.talentName}>{talent.name}</div>
-              <div style={styles.talentSubtitle}>{talent.subtitle}</div>
+  const handleContactTalent = () => {
+    // 设置AI经纪人tab选中状态
+    const event = new CustomEvent('setActiveTab', { detail: 'ai' });
+    window.dispatchEvent(event);
+    // 导航到聊天页面（带对话列表的完整聊天界面）
+    navigate('/chat/conversation-001');
+  };
+
+  return (
+    <div style={styles.talentListContainer}>
+      <div style={styles.talentTable}>
+        <div style={styles.talentTableHeader}>
+          <div style={styles.talentHeaderCell}>达人</div>
+          <div style={styles.talentHeaderCell}>心情状态</div>
+          <div style={styles.talentHeaderCell}>维度修改</div>
+          <div style={styles.talentHeaderCell}>带货</div>
+          <div style={styles.talentHeaderCell}>疑议条件</div>
+          <div style={styles.talentHeaderCell} />
+        </div>
+
+        {talents.map((talent, index) => (
+          <div key={`${talent.name}-${index}`} style={styles.talentTableRow}>
+            <div style={styles.talentCell}>
+              <img src="../../assets/icons/mengshu.png" alt={talent.name} style={styles.talentAvatar} />
+              <div style={styles.talentInfo}>
+                <div style={styles.talentName}>{talent.name}</div>
+                <div style={styles.talentSubtitle}>{talent.subtitle}</div>
+              </div>
+            </div>
+            <div style={styles.talentCell}>{talent.mood}</div>
+            <div style={styles.talentCell}>{talent.dimension}</div>
+            <div style={styles.talentCell}>{talent.sales}</div>
+            <div style={styles.talentCell}>{talent.condition}</div>
+            <div style={styles.talentCell}>
+              <button type="button" style={styles.secondaryButton} onClick={handleContactTalent}>
+                联系达人
+              </button>
             </div>
           </div>
-          <div style={styles.talentCell}>{talent.mood}</div>
-          <div style={styles.talentCell}>{talent.dimension}</div>
-          <div style={styles.talentCell}>{talent.sales}</div>
-          <div style={styles.talentCell}>{talent.condition}</div>
-          <div style={styles.talentCell}>
-            <button type="button" style={styles.secondaryButton}>
-              联系达人
-            </button>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const AIAgent: React.FC = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './AIAnalysisChatPage.css';
 
@@ -13,6 +13,12 @@ import {
 
 const AIAnalysisChatPage = () => {
   const navigate = useNavigate();
+  
+  // 设置当前激活的tab为AI商业助理
+  useEffect(() => {
+    const event = new CustomEvent('setActiveTab', { detail: 'commercial' });
+    window.dispatchEvent(event);
+  }, []);
   const [messages, setMessages] = useState([
     {
       id: 1,

@@ -42,7 +42,7 @@ function App() {
   useEffect(() => {
     const { pathname } = location;
     if (pathname.startsWith('/ai-analysis-chat')) {
-      setActiveTab('data'); // 聊天页面显示为AI数据管家
+      setActiveTab('data'); // 聊天页面默认显示为AI数据管家
     } else if (pathname.startsWith('/content-ops')) {
       setActiveTab('content');
     } else if (pathname.startsWith('/commercial')) {
@@ -53,6 +53,18 @@ function App() {
       setActiveTab('data');
     }
   }, [location]);
+
+  // 监听自定义事件来动态设置tab
+  useEffect(() => {
+    const handleSetActiveTab = (event) => {
+      setActiveTab(event.detail);
+    };
+
+    window.addEventListener('setActiveTab', handleSetActiveTab);
+    return () => {
+      window.removeEventListener('setActiveTab', handleSetActiveTab);
+    };
+  }, []);
 
   // 用户操作函数
   const handleLogin = () => {

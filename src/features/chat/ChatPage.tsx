@@ -41,6 +41,12 @@ const ChatPage: React.FC = () => {
   const location = useLocation();
   const initData = (location.state as ChatInitState | undefined) ?? {};
 
+  // 设置当前激活的tab为AI经纪人
+  useEffect(() => {
+    const event = new CustomEvent('setActiveTab', { detail: 'ai' });
+    window.dispatchEvent(event);
+  }, []);
+
   const getCurrentUserInfo = (): ChatParticipant => {
     const mockUsers: Record<UserType, ChatParticipant> = {
       brand: {
@@ -431,10 +437,6 @@ const ChatPage: React.FC = () => {
                     flexDirection: isCurrentUser ? 'row-reverse' : 'row',
                   }}
                 >
-                  <div style={styles.senderAvatar}>
-                    <img src="/PLUSCO-LOGO.jpg" alt={sender?.name} style={{ width: '100%', height: '100%' }} />
-                  </div>
-
                   <div
                     style={{
                       ...styles.messageBubble,
@@ -723,8 +725,8 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'relative',
   },
   messageBubbleUser: {
-    backgroundColor: '#1890ff',
-    color: '#fff',
+    backgroundColor: '#D1E3FF',
+    color: '#333',
     borderBottomRightRadius: '6px',
   },
   messageBubbleOther: {
@@ -735,6 +737,7 @@ const styles: Record<string, React.CSSProperties> = {
   messageContent: {
     fontSize: '14px',
     lineHeight: 1.4,
+    textAlign: 'left',
   },
   inputContainer: {
     padding: '6px 12px 8px',

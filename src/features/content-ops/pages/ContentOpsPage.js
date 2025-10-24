@@ -623,8 +623,8 @@ const styles = {
   },
   
   'cardItem:hover': {
-    backgroundColor: designTokens.colors.primaryLight,
-    color: designTokens.colors.primary,
+    backgroundColor: '#E7EEFD',
+    color: '#495057',
     transform: 'translateY(-1px)',
   },
   
@@ -790,8 +790,8 @@ Object.assign(styles, {
   cardItem: {
     ...styles.cardItem,
     ':hover': {
-      backgroundColor: designTokens.colors.primaryLight,
-      color: designTokens.colors.primary,
+      backgroundColor: '#E7EEFD',
+      color: '#495057',
       transform: 'translateY(-1px)',
     }
   },
