@@ -272,6 +272,156 @@ const ChatPage: React.FC = () => {
     }
   };
 
+  // 轮询等待任务完成
+  const pollForCompletion = async (chatId: string, conversationId: string): Promise<void> => {
+    const maxAttempts = 30; // 最多轮询30次
+    const pollInterval = 2000; // 每2秒轮询一次
+    
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      try {
+        // 使用查看对话详情接口轮询状态
+        const statusResponse = await fetch(`https://api.coze.cn/v3/chat/conversation/${conversationId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer pat_luAnppZCtLHJX6KzXFJI8KIduOGEKrO16E8o9XvprRdxm5jmrX8Yj7oyNnJ17Bdc',
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          console.log(`轮询第${attempt + 1}次:`, statusData);
+          
+          if (statusData.data && statusData.data.status === 'completed') {
+            // 任务完成，获取消息内容
+            await handleCompletedResponse(conversationId);
+            return;
+          } else if (statusData.data && statusData.data.status === 'failed') {
+            // 任务失败
+            const errorMessage: ConversationMessage = {
+              messageId: `msg_${Date.now() + 1}`,
+              conversationId: conversation.conversationId,
+              senderId: 'ai_assistant',
+              content: {
+                type: 'text',
+                text: 'AI处理失败，请重试。',
+              },
+              timestamp: new Date().toISOString(),
+              readBy: [currentUser.userId],
+            };
+            setMessages((prev) => [...prev, errorMessage]);
+            return;
+          }
+        }
+        
+        // 等待下次轮询
+        await new Promise(resolve => setTimeout(resolve, pollInterval));
+      } catch (error) {
+        console.error(`轮询第${attempt + 1}次失败:`, error);
+        if (attempt === maxAttempts - 1) {
+          // 最后一次轮询失败
+          const errorMessage: ConversationMessage = {
+            messageId: `msg_${Date.now() + 1}`,
+            conversationId: conversation.conversationId,
+            senderId: 'ai_assistant',
+            content: {
+              type: 'text',
+              text: 'AI处理超时，请重试。',
+            },
+            timestamp: new Date().toISOString(),
+            readBy: [currentUser.userId],
+          };
+          setMessages((prev) => [...prev, errorMessage]);
+          return;
+        }
+      }
+    }
+    
+    // 超时处理
+    const timeoutMessage: ConversationMessage = {
+      messageId: `msg_${Date.now() + 1}`,
+      conversationId: conversation.conversationId,
+      senderId: 'ai_assistant',
+      content: {
+        type: 'text',
+        text: 'AI处理超时，请重试。',
+      },
+      timestamp: new Date().toISOString(),
+      readBy: [currentUser.userId],
+    };
+    setMessages((prev) => [...prev, timeoutMessage]);
+  };
+
+  // 处理完成状态，获取AI回复
+  const handleCompletedResponse = async (conversationId: string): Promise<void> => {
+    try {
+      // 使用conversation_id获取消息历史
+      const messagesResponse = await fetch(`https://api.coze.cn/v3/chat/conversation/${conversationId}/messages`, {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer pat_luAnppZCtLHJX6KzXFJI8KIduOGEKrO16E8o9XvprRdxm5jmrX8Yj7oyNnJ17Bdc',
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (messagesResponse.ok) {
+        const messagesData = await messagesResponse.json();
+        console.log('消息历史:', messagesData);
+        
+        // 获取最后一条AI消息
+        if (messagesData.data && messagesData.data.messages && messagesData.data.messages.length > 0) {
+          const aiMessages = messagesData.data.messages.filter((msg: any) => msg.role === 'assistant');
+          if (aiMessages.length > 0) {
+            const lastAiMessage = aiMessages[aiMessages.length - 1];
+            const aiResponse = lastAiMessage.content || lastAiMessage.text || '';
+            
+            const aiMessage: ConversationMessage = {
+              messageId: `msg_${Date.now() + 1}`,
+              conversationId: conversation.conversationId,
+              senderId: 'ai_assistant',
+              content: {
+                type: 'text',
+                text: aiResponse,
+              },
+              timestamp: new Date().toISOString(),
+              readBy: [currentUser.userId],
+            };
+            setMessages((prev) => [...prev, aiMessage]);
+            return;
+          }
+        }
+      }
+      
+      // 如果无法获取消息，显示默认回复
+      const fallbackMessage: ConversationMessage = {
+        messageId: `msg_${Date.now() + 1}`,
+        conversationId: conversation.conversationId,
+        senderId: 'ai_assistant',
+        content: {
+          type: 'text',
+          text: 'AI已处理完成，但无法获取回复内容。',
+        },
+        timestamp: new Date().toISOString(),
+        readBy: [currentUser.userId],
+      };
+      setMessages((prev) => [...prev, fallbackMessage]);
+    } catch (error) {
+      console.error('获取消息失败:', error);
+      const errorMessage: ConversationMessage = {
+        messageId: `msg_${Date.now() + 1}`,
+        conversationId: conversation.conversationId,
+        senderId: 'ai_assistant',
+        content: {
+          type: 'text',
+          text: 'AI已处理完成，但获取回复时出错。',
+        },
+        timestamp: new Date().toISOString(),
+        readBy: [currentUser.userId],
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    }
+  };
+
   const handleSendMessage = async (): Promise<void> => {
     const text = input.trim();
     if (!text || isLoading || !currentUser || !conversation) {
@@ -291,10 +441,154 @@ const ChatPage: React.FC = () => {
     };
 
     setMessages((previous) => [...previous, newMessage]);
-    setInput('');
 
-    // eslint-disable-next-line no-console
-    console.log('消息已发送（模拟）:', newMessage);
+    setInput('');
+    setIsLoading(true);
+
+      try {
+        // 调用扣子API
+        console.log('开始调用扣子API...');
+        // 不传递conversation_id，让API自动创建新对话
+        const response = await fetch('https://api.coze.cn/v3/chat', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer pat_luAnppZCtLHJX6KzXFJI8KIduOGEKrO16E8o9XvprRdxm5jmrX8Yj7oyNnJ17Bdc',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          bot_id: '7564809084328198187',
+          user_id: currentUser.userId,
+          stream: true,
+          auto_save_history: true,
+          additional_messages: [
+            {
+              role: 'user',
+              content: text,
+              content_type: 'text'
+            }
+          ]
+        })
+      });
+
+      console.log('API响应状态:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API请求失败:', response.status, errorText);
+        throw new Error(`API请求失败: ${response.status} - ${errorText}`);
+      }
+
+      // 处理流式响应
+      console.log('开始处理流式响应...');
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('无法读取响应流');
+      }
+
+      const decoder = new TextDecoder();
+      let aiResponse = '';
+      let isFirstMessage = true;
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            console.log('流式响应结束');
+            break;
+          }
+
+          const chunk = decoder.decode(value);
+          console.log('接收到数据块:', chunk);
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+
+              try {
+                const eventData = JSON.parse(data);
+                console.log('流式响应事件:', eventData);
+
+                // 处理AI回复消息
+                if (eventData.data && 
+                    eventData.data.role === 'assistant' && 
+                    eventData.data.type === 'answer') {
+                  
+                  if (eventData.event === 'conversation.message.delta') {
+                    // 增量消息，实时更新
+                    if (isFirstMessage) {
+                      // 创建AI消息
+                      const aiMessage: ConversationMessage = {
+                        messageId: `msg_${Date.now() + 1}`,
+                        conversationId: conversation.conversationId,
+                        senderId: 'mcn_001', // 使用现有的参与者ID
+                        content: {
+                          type: 'text',
+                          text: eventData.data.content || '',
+                        },
+                        timestamp: new Date().toISOString(),
+                        readBy: [currentUser.userId],
+                      };
+                      setMessages((prev) => {
+                        console.log('创建AI消息:', aiMessage);
+                        const newMessages = [...prev, aiMessage];
+                        console.log('更新后的消息列表:', newMessages);
+                        return newMessages;
+                      });
+                      isFirstMessage = false;
+                    } else {
+                      // 更新最后一条AI消息
+                      setMessages((prev) => {
+                        const updated = [...prev];
+                        const lastMessage = updated[updated.length - 1];
+                        if (lastMessage && lastMessage.senderId === 'mcn_001') {
+                          lastMessage.content.text += eventData.data.content || '';
+                          console.log('更新AI消息内容:', lastMessage.content.text);
+                        }
+                        return updated;
+                      });
+                    }
+                  } else if (eventData.event === 'conversation.message.completed') {
+                    // 消息完成，确保最终内容正确
+                    setMessages((prev) => {
+                      const updated = [...prev];
+                      const lastMessage = updated[updated.length - 1];
+                      if (lastMessage && lastMessage.senderId === 'mcn_001') {
+                        lastMessage.content.text = eventData.data.content || '';
+                      }
+                      return updated;
+                    });
+                  }
+                }
+              } catch (parseError) {
+                console.error('解析流式响应失败:', parseError);
+              }
+            }
+          }
+        }
+      } finally {
+        reader.releaseLock();
+      }
+    } catch (error) {
+      console.error('扣子API调用失败:', error);
+      
+      // 如果API调用失败，显示错误消息
+      const errorMessage: ConversationMessage = {
+        messageId: `msg_${Date.now() + 1}`,
+        conversationId: conversation.conversationId,
+        senderId: 'ai_assistant',
+        content: {
+          type: 'text',
+          text: `抱歉，服务暂时不可用。错误信息: ${error instanceof Error ? error.message : '未知错误'}`,
+        },
+        timestamp: new Date().toISOString(),
+        readBy: [currentUser.userId],
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getParticipantInfo = (userId?: string): ChatParticipant => {
@@ -742,8 +1036,7 @@ const styles: Record<string, React.CSSProperties> = {
   inputContainer: {
     padding: '6px 12px 8px',
     backgroundColor: '#fff',
-    borderTop: '1px solid #e5e5e5',
-    height: '50px',
+    height: '55px',
     flexShrink: 0,
   },
   inputWrapper: {
