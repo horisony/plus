@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { designTokens } from '../constants/designTokens';
 import LeftSidebar from '../components/LeftSidebar';
 import ContentInputPanel from '../components/ContentInputPanel';
+import { FileIcon, ImageIcon, VideoIcon, PlusIcon, SendIcon } from '../../../assets/icons';
 // import ContentRecommendations from '../components/ContentRecommendations';
 // import InspirationSnippets from '../components/InspirationSnippets';
 import copy from '../constants/copy.zh-CN.json';
@@ -12,6 +13,8 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
   const [isPaused, setIsPaused] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [snippetPage, setSnippetPage] = useState(0);
+  const [inputMessage, setInputMessage] = useState('');
+  const [showPopover, setShowPopover] = useState(false);
 
   // 用于模拟流式生成
   const generatorTimerRef = useRef(null);
@@ -55,30 +58,39 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
   };
 
   const handleSendMessage = (message) => {
-    if (!message.trim()) return;
+    const messageToSend = message || inputMessage;
+    if (!messageToSend.trim()) return;
     
     const userMessage = {
       id: Date.now(),
-      type: 'user',
-      content: message,
+      sender: 'user',
+      content: messageToSend,
       timestamp: new Date()
     };
     
     const aiMessage = {
       id: Date.now() + 1,
-      type: 'ai',
+      sender: 'ai',
       content: '好的，请稍等，正在为您生成短视频文案...',
       timestamp: new Date()
     };
     currentAiMessageIdRef.current = aiMessage.id;
     
     setMessages(prev => [...prev, userMessage, aiMessage]);
+    setInputMessage('');
     startMockGenerator();
     // 发送后滚动到底部
     setTimeout(() => {
       const el = document.getElementById('conversation-scroll');
       if (el) el.scrollTop = el.scrollHeight;
     }, 0);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   const handleStopGeneration = () => {
@@ -106,18 +118,70 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
         
         {/* 主内容区域 */}
         <div style={styles.chatArea}>
-          {/* 输入面板 - 始终显示在顶部 */}
-          <div style={styles.inputContainer}>
-            <ContentInputPanel 
-              onSendMessage={handleSendMessage}
-              isGenerating={isGenerating}
-              onStop={handleStopGeneration}
-              hasMessages={messages.length > 0}
-            />
+          {/* 消息显示区域 */}
+          {messages.length > 0 && (
+            <div style={styles.messagesContainer}>
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  style={message.sender === 'user' ? styles.userMessage : styles.aiMessage}
+                >
+                  {message.content}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 输入面板 - 当有消息时移到底部 */}
+          <div style={messages.length > 0 ? styles.inputContainerChat : styles.inputContainer}>
+            {messages.length > 0 ? (
+              <div style={styles.inputArea}>
+                <div style={styles.inputIcons}>
+                  <div style={styles.inputIcon} onClick={() => setShowPopover(!showPopover)}>
+                    <PlusIcon />
+                  </div>
+                  {showPopover && (
+                    <div style={styles.popover}>
+                      <div style={styles.popoverItem}>
+                        <FileIcon />
+                        <span>文件</span>
+                      </div>
+                      <div style={styles.popoverItem}>
+                        <ImageIcon />
+                        <span>图片</span>
+                      </div>
+                      <div style={styles.popoverItem}>
+                        <VideoIcon />
+                        <span>视频</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  placeholder="发消息"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  style={styles.messageInput}
+                />
+                <button style={styles.sendButton} onClick={handleSendMessage}>
+                  <SendIcon style={styles.sendIcon} />
+                </button>
+              </div>
+            ) : (
+              <ContentInputPanel 
+                onSendMessage={handleSendMessage}
+                isGenerating={isGenerating}
+                onStop={handleStopGeneration}
+                hasMessages={messages.length > 0}
+              />
+            )}
           </div>
           
-          {/* 四卡片推荐区域 - 始终显示在输入框下方 */}
-          <div style={styles.recommendationsSection}>
+          {/* 四卡片推荐区域 - 只在没有消息时显示 */}
+          {messages.length === 0 && (
+            <div style={styles.recommendationsSection}>
             <div style={styles.cardsGrid4}>
             <div>
               <div style={styles.cardTitleOutside}>{copy.sections.fanFavorites}</div>
@@ -260,7 +324,7 @@ const ContentOpsPage = ({ onNavigateToSnippets }) => {
             </div>
           </div>
         </div>
-        )}
+          )}
         </div>
       </div>
     </div>
@@ -295,18 +359,130 @@ const styles = {
     padding: '20px',
   },
   
-  messagesContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-    overflowY: 'auto',
-    marginBottom: '20px',
-  },
   
   inputContainer: {
     flexShrink: 0,
     marginBottom: '0',
+  },
+  
+  inputContainerChat: {
+    flexShrink: 0,
+    padding: '20px',
+    backgroundColor: '#f5f7fa',
+  },
+  
+  messagesContainer: {
+    flex: 1,
+    padding: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    overflowY: 'auto',
+  },
+  
+  userMessage: {
+    backgroundColor: '#E7EEFD',
+    color: '#333',
+    alignSelf: 'flex-end',
+    borderRadius: '12px 6px 12px 12px',
+    maxWidth: '70%',
+    padding: '12px 16px',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    wordWrap: 'break-word',
+    whiteSpace: 'pre-line',
+    textAlign: 'left',
+  },
+  
+  aiMessage: {
+    backgroundColor: '#ffffff',
+    color: '#374151',
+    alignSelf: 'flex-start',
+    borderRadius: '6px 12px 12px 12px',
+    maxWidth: '70%',
+    padding: '12px 16px',
+    fontSize: '14px',
+    lineHeight: '1.6',
+    wordWrap: 'break-word',
+    whiteSpace: 'pre-line',
+    textAlign: 'left',
+  },
+  
+  inputArea: {
+    display: 'flex',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    border: '1px solid #e5e7eb',
+    borderRadius: '12px',
+    padding: '8px 12px',
+    gap: '8px',
+  },
+  
+  inputIcons: {
+    display: 'flex',
+    gap: '8px',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  
+  inputIcon: {
+    width: '20px',
+    height: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    fontSize: '14px',
+    color: '#6b7280',
+  },
+  
+  messageInput: {
+    flex: 1,
+    border: 'none',
+    outline: 'none',
+    fontSize: '14px',
+    padding: '8px 0',
+    color: '#374151',
+  },
+  
+  sendButton: {
+    width: '32px',
+    height: '32px',
+    backgroundColor: '#3b82f6',
+    border: 'none',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+  },
+  
+  sendIcon: {
+    fontSize: '14px',
+    color: '#ffffff',
+  },
+  
+  popover: {
+    position: 'absolute',
+    bottom: '100%',
+    left: '0',
+    backgroundColor: '#ffffff',
+    border: '1px solid #e5e7eb',
+    borderRadius: '8px',
+    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+    padding: '8px 0',
+    zIndex: 1000,
+    minWidth: '120px',
+  },
+  
+  popoverItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '8px 12px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    color: '#374151',
   },
   
   conversationArea: {

@@ -4,7 +4,7 @@ import { getUserAgents, sendChatMessage } from '../../shared/services/agentServi
 
 interface CardProps {
   title?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode; // ✅ 改为可选
   className?: string;
 }
 

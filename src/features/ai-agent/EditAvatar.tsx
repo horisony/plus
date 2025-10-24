@@ -19,7 +19,7 @@ interface EditNavbarProps {
 
 interface CardProps {
   title: string;
-  children: React.ReactNode;
+  children?: React.ReactNode; // ✅ 改为可选
   className?: string;
 }
 
@@ -102,30 +102,32 @@ const KnowledgeBase: React.FC<KnowledgeBaseProps> = ({ agentData, onKnowledgeCha
 
   return (
     <Card title="📚 知识库">
-      {knowledge && (
-        <div style={{ marginBottom: '16px' }}>
-          <textarea
-            value={knowledge}
-            onChange={handleChange}
-            placeholder="编辑知识库内容..."
-            style={{
-              width: '100%',
-              minHeight: '80px',
-              padding: '8px',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              fontSize: '13px',
-              resize: 'vertical',
-            }}
-          />
+      <div>
+        {knowledge && (
+          <div style={{ marginBottom: '16px' }}>
+            <textarea
+              value={knowledge}
+              onChange={handleChange}
+              placeholder="编辑知识库内容..."
+              style={{
+                width: '100%',
+                minHeight: '80px',
+                padding: '8px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                fontSize: '13px',
+                resize: 'vertical',
+              }}
+            />
+          </div>
+        )}
+        <div className="ea-upload-area">
+          <div className="ea-upload-icon">📄</div>
+          <div className="ea-upload-text">{knowledge ? '添加更多文档' : '上传文档丰富分身知识'}</div>
+          <button type="button" className="ea-upload-button">
+            选择文件
+          </button>
         </div>
-      )}
-      <div className="ea-upload-area">
-        <div className="ea-upload-icon">📄</div>
-        <div className="ea-upload-text">{knowledge ? '添加更多文档' : '上传文档丰富分身知识'}</div>
-        <button type="button" className="ea-upload-button">
-          选择文件
-        </button>
       </div>
     </Card>
   );
@@ -187,7 +189,8 @@ const VoiceSettings: React.FC<VoiceSettingsProps> = ({ agentData, onVoiceChange,
 
   return (
     <Card title="人物设定">
-      <div className="ea-defaults-row">
+      <div>
+        <div className="ea-defaults-row">
         <div className="ea-default-tab">
           <div className="ea-default-label">默认年龄</div>
           <select value={agentData.age || '26-35'} onChange={(event) => onAgeChange(event.target.value)} className="ea-default-select">
@@ -212,6 +215,7 @@ const VoiceSettings: React.FC<VoiceSettingsProps> = ({ agentData, onVoiceChange,
             <option>可爱童声</option>
             <option>成熟男声</option>
           </select>
+        </div>
         </div>
       </div>
     </Card>
