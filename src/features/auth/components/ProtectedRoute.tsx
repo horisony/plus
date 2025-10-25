@@ -23,7 +23,7 @@ const ProtectedRoute: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/welcome" replace state={{ from: location }} />;
+    return <Navigate to="/select-role" replace state={{ from: location }} />;
   }
 
   return <Outlet />;

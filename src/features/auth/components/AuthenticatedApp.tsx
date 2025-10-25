@@ -14,6 +14,7 @@ import { ContentOpsPage } from '../../content-ops';
 import InspirationSnippetsPage from '../../content-ops/pages/InspirationSnippetsPage';
 import { DataAnalyticsApp } from '../../data-analytics';
 import PermissionManagementLanding from '../../permissions/PermissionManagementLanding';
+import LandingPage from '../../landing/LandingPage';
 import useAuth from '../hooks/useAuth';
 import type { AuthRole } from '../types';
 
@@ -34,7 +35,7 @@ const contentOpsContainerStyle: React.CSSProperties = {
 };
 
 const AuthenticatedApp: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabKey>('data');
+  const [activeTab, setActiveTab] = useState<TabKey | ''>('');
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout } = useAuth();
@@ -60,6 +61,8 @@ const AuthenticatedApp: React.FC = () => {
       setActiveTab('commercial');
     } else if (pathname.startsWith('/ai')) {
       setActiveTab('ai');
+    } else if (pathname.startsWith('/home')) {
+      setActiveTab('');
     } else {
       setActiveTab('data');
     }
@@ -78,8 +81,9 @@ const AuthenticatedApp: React.FC = () => {
     navigate('/login');
   };
 
-  const handleLogout = () => {
-    void logout();
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
   };
 
   const handleProfile = () => {
@@ -87,7 +91,7 @@ const AuthenticatedApp: React.FC = () => {
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    navigate('/home');
   };
 
   const handlePermissionManage = (role: AuthRole) => {
@@ -113,7 +117,7 @@ const AuthenticatedApp: React.FC = () => {
       />
 
       <Routes>
-        <Route path="/" element={<Navigate to="/data" replace />} />
+        <Route index element={<LandingPage />} />
         <Route path="/ai" element={<AIAgent />} />
         <Route path="/ai-data-analysis-chat" element={<AIDataAnalysisChat />} />
         <Route path="/commercial" element={<CommercialDashboard />} />
@@ -145,7 +149,7 @@ const AuthenticatedApp: React.FC = () => {
           )}
         />
         <Route path="/data" element={<DataAnalyticsApp />} />
-        <Route path="*" element={<Navigate to="/data" replace />} />
+        <Route path="*" element={<Navigate to="/home" replace />} />
       </Routes>
     </div>
   );

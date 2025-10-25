@@ -10,6 +10,7 @@ import {
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import type { AuthRole } from './features/auth/types';
+import PLUSLogo from './PLUSLOGO.png';
 
 const { Header } = Layout;
 const { Text, Title } = Typography;
@@ -226,7 +227,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({
   return (
     <Header style={headerStyle}>
       <button type="button" style={brandButtonStyle} onClick={handleLogoButtonClick} aria-label="返回主页">
-        <img src="/brand/PLUSCO-logo.png" alt="PLUSCO" style={{ width: 40, height: 40 }} />
+        <img src={PLUSLogo} alt="PLUSCO" style={{ width: 40, height: 40 }} />
         <Title level={4} style={{ margin: 0 }}>
           PLUSCO
         </Title>

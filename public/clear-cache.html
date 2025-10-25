@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清除缓存 - PLUSCO</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #c62828 0%, #e53935 50%, #ef5350 100%);
+        }
+        .container {
+            text-align: center;
+            background: white;
+            padding: 48px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+        }
+        h1 {
+            color: #1f2933;
+            margin: 0 0 16px 0;
+            font-size: 28px;
+        }
+        p {
+            color: #52606d;
+            margin: 0 0 32px 0;
+            line-height: 1.6;
+        }
+        button {
+            background: #c62828;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #b71c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+        }
+        .success {
+            color: #2e7d32;
+            font-weight: 600;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 清除缓存</h1>
+        <p>如果页面显示异常或无法看到首页，请点击下面的按钮清除浏览器缓存并重新加载。</p>
+        <button onclick="clearAndRedirect()">清除缓存并返回首页</button>
+        <p id="message" class="success" style="display: none;">缓存已清除！正在跳转...</p>
+    </div>
+
+    <script>
+        function clearAndRedirect() {
+            // 清除所有存储
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // 显示成功消息
+            document.getElementById('message').style.display = 'block';
+            
+            // 1秒后跳转到首页
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
+        }
+
+        // 页面加载时自动执行一次
+        if (window.location.search.includes('auto=true')) {
+            clearAndRedirect();
+        }
+    </script>
+</body>
+</html>
+

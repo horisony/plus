@@ -27,13 +27,13 @@ const LoginPage: React.FC = () => {
 
   React.useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      navigate('/data');
     }
   }, [isAuthenticated, navigate]);
 
   React.useEffect(() => {
     if (!loginType) {
-      navigate('/welcome', { replace: true });
+      navigate('/select-role', { replace: true });
     }
   }, [loginType, navigate]);
 
@@ -63,7 +63,7 @@ const LoginPage: React.FC = () => {
           </Card>
         )}
         
-        <PhoneLoginForm loginType={loginType} onSuccess={(nextLoginType) => navigate(`/?loginType=${nextLoginType}`)} />
+        <PhoneLoginForm loginType={loginType} onSuccess={(nextLoginType) => navigate(`/data?loginType=${nextLoginType}`)} />
       </Card>
     </div>
   );

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import type { LoginType } from '../types';
 import './RoleSelectionPage.css';
+import PLUSLogo from '../../../PLUSLOGO.png';
 
 const { Title, Paragraph } = Typography;
 
@@ -45,7 +46,7 @@ const RoleSelectionPage: React.FC = () => {
       <div className="role-selection-overlay">
         <header className="role-selection-header">
           <Space align="center" size={16}>
-            <img src="/brand/PLUSCO-logo.png" alt="PlusCo" className="role-selection-logo" />
+            <img src={PLUSLogo} alt="PlusCo" className="role-selection-logo" />
             <div>
               <Title level={3} style={{ margin: 0, color: '#ffffff' }}>
                 PlusCo
