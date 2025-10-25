@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ConversationMessage, ConversationSummary } from '../../shared/services/chatService';
+import LiuAvatar from '../../assets/icons/Liu.png';
+import LiAvatar from '../../assets/icons/Li.png';
 
 type UserType = 'brand' | 'mcn' | 'mcn_talent';
 
@@ -84,7 +86,8 @@ const ChatPage: React.FC = () => {
   const [isWaitingForAI, setIsWaitingForAI] = useState(false);
   const [participants, setParticipants] = useState<ChatParticipant[]>([]);
   const [currentUser] = useState<ChatParticipant>(getCurrentUserInfo);
-  const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>(conversationId);
+  // 默认选中第一个对话
+  const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>(conversationId || 'conv_001');
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -104,11 +107,11 @@ const ChatPage: React.FC = () => {
       const mockConversations: ConversationListItem[] = [
         {
           conversationId: 'conv_001',
-          projectName: '小米SU7 发布会',
-          lastMessage: '好的，现在开始为你匹配',
-          lastMessageTime: '2025-10-10',
+          projectName: '达人成长助手',
+          lastMessage: '嗨，你好！我致力于陪伴达人成长，提供专业指导...',
+          lastMessageTime: '今天',
           participants: [
-            { name: '奇光', avatar: '/PLUSCO-LOGO.jpg', userType: 'mcn', userId: 'mcn_002', role: 'mcn_partner' },
+            { name: '刘经理', avatar: LiuAvatar, userType: 'mcn', userId: 'mcn_002', role: 'mcn_partner' },
             { name: '小米', avatar: '/PLUSCO-LOGO.jpg', userType: 'brand', userId: 'brand_001', role: 'brand_manager' },
           ],
           unreadCount: 0,
@@ -119,10 +122,10 @@ const ChatPage: React.FC = () => {
           lastMessage: '最近有档期呢',
           lastMessageTime: '昨天',
           participants: [
-            { name: '通望MCN', avatar: '/PLUSCO-LOGO.jpg', userType: 'mcn', userId: 'mcn_003', role: 'mcn_manager' },
+            { name: '张经理', avatar: LiAvatar, userType: 'mcn', userId: 'mcn_003', role: 'mcn_manager' },
             { name: '华为', avatar: '/PLUSCO-LOGO.jpg', userType: 'brand', userId: 'brand_002', role: 'brand_manager' },
           ],
-          unreadCount: 2,
+          unreadCount: 0,
         },
         {
           conversationId: 'conv_003',
@@ -130,7 +133,7 @@ const ChatPage: React.FC = () => {
           lastMessage: '这个文件发现了一下',
           lastMessageTime: '昨天',
           participants: [
-            { name: '奇光MCN', avatar: '/PLUSCO-LOGO.jpg', userType: 'mcn', userId: 'mcn_004', role: 'mcn_manager' },
+            { name: '李经理', avatar: LiAvatar, userType: 'mcn', userId: 'mcn_004', role: 'mcn_manager' },
             { name: '苹果', avatar: '/PLUSCO-LOGO.jpg', userType: 'brand', userId: 'brand_003', role: 'brand_manager' },
           ],
           unreadCount: 0,
@@ -150,8 +153,11 @@ const ChatPage: React.FC = () => {
 
       if (conversationId && conversationId !== 'new') {
         await loadExistingConversation(conversationId);
-      } else {
+      } else if (conversationId === 'new') {
         await createNewConversation();
+      } else {
+        // 默认加载第一个对话
+        await loadExistingConversation('conv_001');
       }
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -163,26 +169,84 @@ const ChatPage: React.FC = () => {
 
   const loadExistingConversation = async (convId: string): Promise<void> => {
     try {
+      // 根据不同的conversationId设置不同的participants
+      const getParticipantsForConversation = (id: string) => {
+        if (id === 'conv_001') {
+          return [
+            {
+              userId: 'mcn_002',
+              userType: 'mcn' as const,
+              name: '刘经理',
+              avatar: LiuAvatar,
+              role: 'mcn_partner',
+            },
+            {
+              userId: 'brand_001',
+              userType: 'brand' as const,
+              name: '小米',
+              avatar: '/PLUSCO-LOGO.jpg',
+              role: 'brand_manager',
+            },
+          ];
+        } else if (id === 'conv_002') {
+          return [
+            {
+              userId: 'mcn_003',
+              userType: 'mcn' as const,
+              name: '张经理',
+              avatar: LiAvatar,
+              role: 'mcn_manager',
+            },
+            {
+              userId: 'brand_002',
+              userType: 'brand' as const,
+              name: '华为',
+              avatar: '/PLUSCO-LOGO.jpg',
+              role: 'brand_manager',
+            },
+          ];
+        } else if (id === 'conv_003') {
+          return [
+            {
+              userId: 'mcn_004',
+              userType: 'mcn' as const,
+              name: '李经理',
+              avatar: LiAvatar,
+              role: 'mcn_manager',
+            },
+            {
+              userId: 'brand_003',
+              userType: 'brand' as const,
+              name: '苹果',
+              avatar: '/PLUSCO-LOGO.jpg',
+              role: 'brand_manager',
+            },
+          ];
+        } else {
+          return [
+            {
+              userId: 'brand_001',
+              userType: 'brand' as const,
+              name: '小米',
+              avatar: '/PLUSCO-LOGO.jpg',
+              role: 'brand_manager',
+            },
+            {
+              userId: 'mcn_001',
+              userType: 'mcn' as const,
+              name: '无忧传媒',
+              avatar: '/PLUSCO-LOGO.jpg',
+              role: 'mcn_manager',
+            },
+          ];
+        }
+      };
+
       const mockConversation: ConversationSummary = {
         conversationId: convId,
         projectId: initData.projectId ?? 'project_001',
-        projectName: initData.projectName ?? '小米SU7 发布会',
-        participants: [
-          {
-            userId: 'brand_001',
-            userType: 'brand',
-            name: '小米',
-            avatar: '/PLUSCO-LOGO.jpg',
-            role: 'brand_manager',
-          },
-          {
-            userId: 'mcn_001',
-            userType: 'mcn',
-            name: '无忧传媒',
-            avatar: '/PLUSCO-LOGO.jpg',
-            role: 'mcn_manager',
-          },
-        ],
+        projectName: convId === 'conv_001' ? '达人成长助手' : (initData.projectName ?? '小米SU7 发布会'),
+        participants: getParticipantsForConversation(convId),
         conversationType: 'project_discussion',
         status: 'active',
         createdAt: '2025-10-08T10:00:00Z',
@@ -192,30 +256,100 @@ const ChatPage: React.FC = () => {
         metadata: {},
       };
 
-      const mockMessages: ConversationMessage[] = [
-        {
-          messageId: 'msg_001',
-          conversationId: convId,
-          senderId: 'mcn_001',
-          content: {
-            type: 'text',
-            text: '您好！关于小米SU7的推广项目，我们MCN有很多优质达人资源，可以为您提供专业的内容营销服务。',
-          },
-          timestamp: '2025-10-08T10:05:00Z',
-          readBy: ['mcn_001'],
-        },
-        {
-          messageId: 'msg_002',
-          conversationId: convId,
-          senderId: 'brand_001',
-          content: {
-            type: 'text',
-            text: '谢谢！我们对你们的达人资源很感兴趣。能否先介绍一下你们在汽车领域的案例？',
-          },
-          timestamp: '2025-10-08T10:15:00Z',
-          readBy: ['brand_001', 'mcn_001'],
-        },
-      ];
+      const getMockMessages = (id: string): ConversationMessage[] => {
+        if (id === 'conv_001') {
+          return [
+            {
+              messageId: 'msg_001',
+              conversationId: id,
+              senderId: 'mcn_002',
+              content: {
+                type: 'text',
+                text: '嗨，你好！我致力于陪伴达人成长，提供专业指导。让我们一起开启达人之旅吧！',
+              },
+              timestamp: '2025-10-08T10:05:00Z',
+              readBy: ['mcn_002'],
+            },
+          ];
+        } else if (id === 'conv_002') {
+          return [
+            {
+              messageId: 'msg_001',
+              conversationId: id,
+              senderId: 'mcn_003',
+              content: {
+                type: 'text',
+                text: '您好！关于华为Mate项目，我们可以提供优质的达人资源支持。',
+              },
+              timestamp: '2025-10-08T10:05:00Z',
+              readBy: ['mcn_003'],
+            },
+            {
+              messageId: 'msg_002',
+              conversationId: id,
+              senderId: 'brand_002',
+              content: {
+                type: 'text',
+                text: '最近有档期呢',
+              },
+              timestamp: '2025-10-08T10:15:00Z',
+              readBy: ['brand_002', 'mcn_003'],
+            },
+          ];
+        } else if (id === 'conv_003') {
+          return [
+            {
+              messageId: 'msg_001',
+              conversationId: id,
+              senderId: 'mcn_004',
+              content: {
+                type: 'text',
+                text: '您好！我们在苹果发布会推广方面有丰富的经验。',
+              },
+              timestamp: '2025-10-08T10:05:00Z',
+              readBy: ['mcn_004'],
+            },
+            {
+              messageId: 'msg_002',
+              conversationId: id,
+              senderId: 'brand_003',
+              content: {
+                type: 'text',
+                text: '这个文件发现了一下',
+              },
+              timestamp: '2025-10-08T10:15:00Z',
+              readBy: ['brand_003', 'mcn_004'],
+            },
+          ];
+        } else {
+          return [
+            {
+              messageId: 'msg_001',
+              conversationId: id,
+              senderId: 'mcn_001',
+              content: {
+                type: 'text',
+                text: '您好！关于小米SU7的推广项目，我们MCN有很多优质达人资源，可以为您提供专业的内容营销服务。',
+              },
+              timestamp: '2025-10-08T10:05:00Z',
+              readBy: ['mcn_001'],
+            },
+            {
+              messageId: 'msg_002',
+              conversationId: id,
+              senderId: 'brand_001',
+              content: {
+                type: 'text',
+                text: '谢谢！我们对你们的达人资源很感兴趣。能否先介绍一下你们在汽车领域的案例？',
+              },
+              timestamp: '2025-10-08T10:15:00Z',
+              readBy: ['brand_001', 'mcn_001'],
+            },
+          ];
+        }
+      };
+
+      const mockMessages = getMockMessages(convId);
 
       setConversation(mockConversation);
       setMessages(mockMessages);
@@ -945,6 +1079,7 @@ const ChatPage: React.FC = () => {
           {conversations.map((conv) => {
             const otherParticipant = conv.participants?.find((participant) => participant && participant.userType !== currentUser?.userType);
             const displayName = otherParticipant?.name ?? conv.projectName ?? '未知对话';
+            const avatarSrc = otherParticipant?.avatar ?? '/PLUSCO-LOGO.jpg';
 
             return (
               <div
@@ -963,7 +1098,7 @@ const ChatPage: React.FC = () => {
                 }}
               >
                 <div style={styles.conversationAvatar}>
-                  <img src="/PLUSCO-LOGO.jpg" alt="对话头像" style={{ width: '100%', height: '100%' }} />
+                  <img src={avatarSrc} alt="对话头像" style={{ width: '100%', height: '100%' }} />
                 </div>
                 <div style={styles.conversationContent}>
                   <div style={styles.conversationHeader}>
@@ -985,7 +1120,7 @@ const ChatPage: React.FC = () => {
         <div style={styles.chatHeader}>
           <div style={styles.chatHeaderLeft}>
             <div style={styles.chatAvatar}>
-              <img src="/PLUSCO-LOGO.png" alt="聊天对象头像" style={{ width: '100%', height: '100%' }} />
+              <img src={chatTarget?.avatar ?? '/PLUSCO-LOGO.jpg'} alt="聊天对象头像" style={{ width: '100%', height: '100%' }} />
             </div>
             <div style={styles.chatHeaderInfo}>
               <div style={styles.chatHeaderName}>{chatTarget?.name ?? '我的对话'}</div>
@@ -1159,7 +1294,7 @@ const styles: Record<string, React.CSSProperties> = {
   conversationItem: {
     display: 'flex',
     alignItems: 'center',
-    padding: '4px 8px',
+    padding: '12px 8px',
     cursor: 'pointer',
     borderBottom: '1px solid #f0f0f0',
     transition: 'background-color 0.2s',
@@ -1188,7 +1323,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: '4px',
+    marginBottom: '2px',
   },
   conversationName: {
     fontSize: '13px',
@@ -1403,21 +1538,21 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'relative',
     backgroundColor: '#f8f9fa',
     borderRadius: '12px',
-    padding: '6px 35px 6px 10px',
+    padding: '10px 35px 10px 10px',
     display: 'flex',
     alignItems: 'center',
-    height: '32px',
+    height: '43px',
   },
   textarea: {
     width: '100%',
-    height: '20px',
+    height: '23px',
     border: 'none',
     backgroundColor: 'transparent',
     fontSize: '12px',
     resize: 'none',
     outline: 'none',
     fontFamily: 'inherit',
-    lineHeight: '20px',
+    lineHeight: '23px',
   },
   inputActions: {
     position: 'absolute',
