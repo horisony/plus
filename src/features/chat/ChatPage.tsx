@@ -81,6 +81,7 @@ const ChatPage: React.FC = () => {
   const [messages, setMessages] = useState<ConversationMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isWaitingForAI, setIsWaitingForAI] = useState(false);
   const [participants, setParticipants] = useState<ChatParticipant[]>([]);
   const [currentUser] = useState<ChatParticipant>(getCurrentUserInfo);
   const [selectedConversationId, setSelectedConversationId] = useState<string | undefined>(conversationId);
@@ -96,7 +97,7 @@ const ChatPage: React.FC = () => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isWaitingForAI]);
 
   const loadConversationsList = async (): Promise<void> => {
     try {
@@ -444,6 +445,7 @@ const ChatPage: React.FC = () => {
 
     setInput('');
     setIsLoading(true);
+    setIsWaitingForAI(true);
 
       try {
         // 调用扣子API
@@ -566,6 +568,7 @@ const ChatPage: React.FC = () => {
                       readBy: [currentUser.userId],
                     };
                     setMessages(prev => [...prev, aiMessage]);
+                    setIsWaitingForAI(false);
                     aiMessageCreated = true;
                     console.log('AI消息已创建(首次delta):', content);
                   } else {
@@ -611,6 +614,7 @@ const ChatPage: React.FC = () => {
                       readBy: [currentUser.userId],
                     };
                     setMessages(prev => [...prev, aiMessage]);
+                    setIsWaitingForAI(false);
                     aiMessageCreated = true;
                     console.log('AI消息已创建(completed):', fullContent);
                   } else {
@@ -663,6 +667,7 @@ const ChatPage: React.FC = () => {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      setIsWaitingForAI(false);
     }
   };
 
@@ -673,6 +678,227 @@ const ChatPage: React.FC = () => {
 
     const participant = participants.find((item) => item?.userId === userId);
     return participant ?? currentUser ?? fallbackParticipant;
+  };
+
+  // 渲染支持Markdown格式的文本
+  const renderMessageText = (text: string): React.ReactNode => {
+    const lines = text.split('\n');
+    const elements: React.ReactNode[] = [];
+    let key = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      
+      // 处理标题 (###, ##, #)
+      const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+      if (headingMatch) {
+        const level = headingMatch[1].length;
+        const headingText = headingMatch[2];
+        const fontSize = level === 1 ? '20px' : level === 2 ? '18px' : level === 3 ? '16px' : '14px';
+        const headingStyle: React.CSSProperties = { 
+          fontWeight: 'bold', 
+          margin: '8px 0 4px 0',
+          fontSize,
+          lineHeight: 1.3
+        };
+        
+        elements.push(
+          React.createElement(
+            `h${level}`,
+            { key: `heading-${key++}`, style: headingStyle },
+            parseInlineMarkdown(headingText, key)
+          )
+        );
+        continue;
+      }
+
+      // 处理无序列表
+      const unorderedListMatch = line.match(/^[\-\*]\s+(.+)$/);
+      if (unorderedListMatch) {
+        elements.push(
+          <div key={`list-${key++}`} style={{ display: 'flex', alignItems: 'flex-start', marginLeft: '8px', marginBottom: '2px' }}>
+            <span style={{ marginRight: '8px', flexShrink: 0 }}>•</span>
+            <span>{parseInlineMarkdown(unorderedListMatch[1], key)}</span>
+          </div>
+        );
+        continue;
+      }
+
+      // 处理有序列表
+      const orderedListMatch = line.match(/^(\d+)\.\s+(.+)$/);
+      if (orderedListMatch) {
+        elements.push(
+          <div key={`list-${key++}`} style={{ display: 'flex', alignItems: 'flex-start', marginLeft: '8px', marginBottom: '2px' }}>
+            <span style={{ marginRight: '8px', flexShrink: 0, minWidth: '20px' }}>{orderedListMatch[1]}.</span>
+            <span>{parseInlineMarkdown(orderedListMatch[2], key)}</span>
+          </div>
+        );
+        continue;
+      }
+
+      // 处理引用
+      const quoteMatch = line.match(/^>\s+(.+)$/);
+      if (quoteMatch) {
+        elements.push(
+          <div 
+            key={`quote-${key++}`} 
+            style={{ 
+              borderLeft: '3px solid #ddd', 
+              paddingLeft: '12px', 
+              marginLeft: '4px',
+              color: '#666',
+              fontStyle: 'italic',
+              marginBottom: '4px'
+            }}
+          >
+            {parseInlineMarkdown(quoteMatch[1], key)}
+          </div>
+        );
+        continue;
+      }
+
+      // 处理代码块
+      if (line.startsWith('```')) {
+        const codeLines: string[] = [];
+        i++; // 跳过开始的 ```
+        while (i < lines.length && !lines[i].startsWith('```')) {
+          codeLines.push(lines[i]);
+          i++;
+        }
+        elements.push(
+          <pre 
+            key={`code-${key++}`} 
+            style={{ 
+              backgroundColor: '#f5f5f5', 
+              padding: '8px 12px', 
+              borderRadius: '4px',
+              overflow: 'auto',
+              fontSize: '13px',
+              margin: '4px 0',
+              border: '1px solid #e0e0e0'
+            }}
+          >
+            <code>{codeLines.join('\n')}</code>
+          </pre>
+        );
+        continue;
+      }
+
+      // 处理普通段落（包含行内格式）
+      if (line.trim()) {
+        elements.push(
+          <div key={`line-${key++}`} style={{ marginBottom: i < lines.length - 1 ? '4px' : 0 }}>
+            {parseInlineMarkdown(line, key)}
+          </div>
+        );
+      } else if (i < lines.length - 1) {
+        // 空行
+        elements.push(<br key={`br-${key++}`} />);
+      }
+    }
+
+    return elements.length > 0 ? elements : text;
+  };
+
+  // 解析行内Markdown格式（粗体、斜体、代码、删除线、链接）
+  const parseInlineMarkdown = (text: string, baseKey: number): React.ReactNode => {
+    const parts: React.ReactNode[] = [];
+    let remaining = text;
+    let key = baseKey;
+
+    // 正则表达式优先级：链接 > 粗体 > 斜体 > 删除线 > 行内代码
+    const patterns = [
+      { regex: /\[([^\]]+)\]\(([^)]+)\)/g, type: 'link' },          // [text](url)
+      { regex: /\*\*([^*]+)\*\*/g, type: 'bold' },                  // **text**
+      { regex: /__([^_]+)__/g, type: 'bold' },                      // __text__
+      { regex: /\*([^*]+)\*/g, type: 'italic' },                    // *text*
+      { regex: /_([^_]+)_/g, type: 'italic' },                      // _text_
+      { regex: /~~([^~]+)~~/g, type: 'strikethrough' },             // ~~text~~
+      { regex: /`([^`]+)`/g, type: 'code' },                        // `code`
+    ];
+
+    let allMatches: Array<{ index: number; length: number; type: string; match: RegExpExecArray }> = [];
+
+    // 收集所有匹配
+    patterns.forEach(pattern => {
+      let match;
+      const regex = new RegExp(pattern.regex.source, pattern.regex.flags);
+      while ((match = regex.exec(text)) !== null) {
+        allMatches.push({
+          index: match.index,
+          length: match[0].length,
+          type: pattern.type,
+          match: match
+        });
+      }
+    });
+
+    // 按位置排序
+    allMatches.sort((a, b) => a.index - b.index);
+
+    let lastIndex = 0;
+    allMatches.forEach(item => {
+      // 检查重叠
+      if (item.index < lastIndex) return;
+
+      // 添加之前的普通文本
+      if (item.index > lastIndex) {
+        parts.push(text.substring(lastIndex, item.index));
+      }
+
+      // 添加格式化文本
+      const content = item.match[1];
+      switch (item.type) {
+        case 'bold':
+          parts.push(<strong key={`bold-${key++}`}>{content}</strong>);
+          break;
+        case 'italic':
+          parts.push(<em key={`italic-${key++}`}>{content}</em>);
+          break;
+        case 'strikethrough':
+          parts.push(<del key={`del-${key++}`}>{content}</del>);
+          break;
+        case 'code':
+          parts.push(
+            <code 
+              key={`code-${key++}`} 
+              style={{ 
+                backgroundColor: '#f0f0f0', 
+                padding: '2px 4px', 
+                borderRadius: '3px',
+                fontSize: '0.9em',
+                fontFamily: 'monospace'
+              }}
+            >
+              {content}
+            </code>
+          );
+          break;
+        case 'link':
+          const url = item.match[2];
+          parts.push(
+            <a 
+              key={`link-${key++}`} 
+              href={url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ color: '#1890ff', textDecoration: 'underline' }}
+            >
+              {content}
+            </a>
+          );
+          break;
+      }
+
+      lastIndex = item.index + item.length;
+    });
+
+    // 添加剩余文本
+    if (lastIndex < text.length) {
+      parts.push(text.substring(lastIndex));
+    }
+
+    return parts.length > 0 ? parts : text;
   };
 
   const handleBack = (): void => {
@@ -781,7 +1007,7 @@ const ChatPage: React.FC = () => {
             if (isSystemMessage) {
               return (
                 <div key={message.messageId} style={styles.systemMessage}>
-                  <div style={styles.systemMessageText}>{message.content.text ?? ''}</div>
+                  <div style={styles.systemMessageText}>{renderMessageText(message.content.text ?? '')}</div>
                 </div>
               );
             }
@@ -814,12 +1040,49 @@ const ChatPage: React.FC = () => {
                       ...(isCurrentUser ? styles.messageBubbleUser : styles.messageBubbleOther),
                     }}
                   >
-                    <div style={styles.messageContent}>{message.content.text ?? ''}</div>
+                    <div style={styles.messageContent}>{renderMessageText(message.content.text ?? '')}</div>
                   </div>
                 </div>
               </div>
             );
           })}
+          
+          {/* AI回复加载动画 */}
+          {isWaitingForAI && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                alignItems: 'flex-end',
+                marginBottom: '4px',
+                width: '100%',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  gap: '4px',
+                  maxWidth: '80%',
+                  width: 'fit-content',
+                }}
+              >
+                <div
+                  style={{
+                    ...styles.messageBubble,
+                    ...styles.messageBubbleOther,
+                    ...styles.loadingBubble,
+                  }}
+                >
+                  <div style={styles.loadingDots} className="loadingDots">
+                    <span style={styles.loadingDot}></span>
+                    <span style={styles.loadingDot}></span>
+                    <span style={styles.loadingDot}></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={styles.inputContainer}>
@@ -1110,6 +1373,26 @@ const styles: Record<string, React.CSSProperties> = {
     lineHeight: 1.4,
     textAlign: 'left',
   },
+  loadingBubble: {
+    minWidth: '50px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '10px 16px',
+  },
+  loadingDots: {
+    display: 'flex',
+    gap: '3px',
+    alignItems: 'center',
+  },
+  loadingDot: {
+    display: 'inline-block',
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    backgroundColor: '#999',
+    animation: 'loadingBounce 1.2s infinite ease-in-out',
+  },
   inputContainer: {
     padding: '6px 12px 8px',
     backgroundColor: '#fff',
@@ -1185,10 +1468,36 @@ const spinKeyframes = `
   }
 `;
 
+const loadingBounceKeyframes = `
+  @keyframes loadingBounce {
+    0%, 100% {
+      opacity: 0.3;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+`;
+
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
-  style.textContent = spinKeyframes;
+  style.textContent = spinKeyframes + loadingBounceKeyframes;
   document.head.appendChild(style);
+  
+  // 为每个loading dot添加不同的延迟，实现从左到右的效果
+  const loadingDotsStyle = document.createElement('style');
+  loadingDotsStyle.textContent = `
+    .loadingDots span:nth-child(1) {
+      animation-delay: 0s;
+    }
+    .loadingDots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .loadingDots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  `;
+  document.head.appendChild(loadingDotsStyle);
 }
 
 export default ChatPage;
