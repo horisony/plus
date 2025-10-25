@@ -474,19 +474,46 @@ const ChatPage: React.FC = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('API请求失败:', response.status, errorText);
-        throw new Error(`API请求失败: ${response.status} - ${errorText}`);
+        
+        // 显示错误消息给用户
+        const errorMessage: ConversationMessage = {
+          messageId: `error_${Date.now()}`,
+          conversationId: conversation.conversationId,
+          senderId: 'mcn_001',
+          content: {
+            type: 'text',
+            text: `API请求失败 (${response.status}): ${errorText}`,
+          },
+          timestamp: new Date().toISOString(),
+          readBy: [currentUser.userId],
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        return;
       }
 
       // 处理流式响应
       console.log('开始处理流式响应...');
       const reader = response.body?.getReader();
       if (!reader) {
-        throw new Error('无法读取响应流');
+        console.error('无法读取响应流');
+        const errorMessage: ConversationMessage = {
+          messageId: `error_${Date.now()}`,
+          conversationId: conversation.conversationId,
+          senderId: 'mcn_001',
+          content: {
+            type: 'text',
+            text: '无法读取API响应流',
+          },
+          timestamp: new Date().toISOString(),
+          readBy: [currentUser.userId],
+        };
+        setMessages((prev) => [...prev, errorMessage]);
+        return;
       }
 
       const decoder = new TextDecoder();
-      let aiResponse = '';
-      let isFirstMessage = true;
+      let aiMessageCreated = false;
+      let currentEvent = '';
 
       try {
         while (true) {
@@ -501,67 +528,115 @@ const ChatPage: React.FC = () => {
           const lines = chunk.split('\n');
 
           for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              const data = line.slice(6);
-              if (data === '[DONE]') continue;
+            // 处理event行
+            if (line.startsWith('event:')) {
+              currentEvent = line.slice(6).trim();
+              console.log('当前事件类型:', currentEvent);
+            } 
+            // 处理data行
+            else if (line.startsWith('data:')) {
+              const data = line.slice(5).trim();
+              if (data === '"[DONE]"' || data === '[DONE]') {
+                console.log('流式响应完成标记');
+                continue;
+              }
 
               try {
                 const eventData = JSON.parse(data);
-                console.log('流式响应事件:', eventData);
+                console.log('解析的数据:', currentEvent, eventData);
 
-                // 处理AI回复消息
-                if (eventData.data && 
-                    eventData.data.role === 'assistant' && 
-                    eventData.data.type === 'answer') {
+                // 处理增量消息 - 优先处理delta事件，实现实时显示
+                if (currentEvent === 'conversation.message.delta' && 
+                    eventData.role === 'assistant' && 
+                    eventData.type === 'answer') {
                   
-                  if (eventData.event === 'conversation.message.delta') {
-                    // 增量消息，实时更新
-                    if (isFirstMessage) {
-                      // 创建AI消息
-                      const aiMessage: ConversationMessage = {
-                        messageId: `msg_${Date.now() + 1}`,
-                        conversationId: conversation.conversationId,
-                        senderId: 'mcn_001', // 使用现有的参与者ID
-                        content: {
-                          type: 'text',
-                          text: eventData.data.content || '',
-                        },
-                        timestamp: new Date().toISOString(),
-                        readBy: [currentUser.userId],
-                      };
-                      setMessages((prev) => {
-                        console.log('创建AI消息:', aiMessage);
-                        const newMessages = [...prev, aiMessage];
-                        console.log('更新后的消息列表:', newMessages);
-                        return newMessages;
-                      });
-                      isFirstMessage = false;
-                    } else {
-                      // 更新最后一条AI消息
-                      setMessages((prev) => {
-                        const updated = [...prev];
-                        const lastMessage = updated[updated.length - 1];
-                        if (lastMessage && lastMessage.senderId === 'mcn_001') {
-                          lastMessage.content.text += eventData.data.content || '';
-                          console.log('更新AI消息内容:', lastMessage.content.text);
-                        }
-                        return updated;
-                      });
-                    }
-                  } else if (eventData.event === 'conversation.message.completed') {
-                    // 消息完成，确保最终内容正确
-                    setMessages((prev) => {
+                  const content = eventData.content || '';
+                  
+                  if (!aiMessageCreated) {
+                    // 第一次收到delta时创建AI消息
+                    const aiMessage: ConversationMessage = {
+                      messageId: eventData.id,
+                      conversationId: conversation.conversationId,
+                      senderId: 'mcn_001',
+                      content: {
+                        type: 'text',
+                        text: content,
+                      },
+                      timestamp: new Date().toISOString(),
+                      readBy: [currentUser.userId],
+                    };
+                    setMessages(prev => [...prev, aiMessage]);
+                    aiMessageCreated = true;
+                    console.log('AI消息已创建(首次delta):', content);
+                  } else {
+                    // 更新已存在的AI消息 - 使用不可变更新
+                    setMessages(prev => {
                       const updated = [...prev];
-                      const lastMessage = updated[updated.length - 1];
+                      const lastIndex = updated.length - 1;
+                      const lastMessage = updated[lastIndex];
                       if (lastMessage && lastMessage.senderId === 'mcn_001') {
-                        lastMessage.content.text = eventData.data.content || '';
+                        updated[lastIndex] = {
+                          ...lastMessage,
+                          content: {
+                            ...lastMessage.content,
+                            text: lastMessage.content.text + content
+                          }
+                        };
                       }
                       return updated;
                     });
                   }
+                } else if (currentEvent === 'conversation.message.completed' && 
+                           eventData.role === 'assistant' && 
+                           eventData.type === 'answer') {
+                  
+                  // 消息完成，用完整内容替换（确保最终内容正确）
+                  const content = eventData.content || '';
+                  const reasoningContent = eventData.reasoning_content || '';
+                  const fullContent = content + (reasoningContent ? '\n\n思考过程：\n' + reasoningContent : '');
+                  
+                  console.log('收到completed事件，完整内容:', fullContent);
+                  
+                  if (!aiMessageCreated) {
+                    // 如果之前没有收到delta，在这里创建消息
+                    const aiMessage: ConversationMessage = {
+                      messageId: eventData.id,
+                      conversationId: conversation.conversationId,
+                      senderId: 'mcn_001',
+                      content: {
+                        type: 'text',
+                        text: fullContent,
+                      },
+                      timestamp: new Date().toISOString(),
+                      readBy: [currentUser.userId],
+                    };
+                    setMessages(prev => [...prev, aiMessage]);
+                    aiMessageCreated = true;
+                    console.log('AI消息已创建(completed):', fullContent);
+                  } else {
+                    // 如果已经有消息，用完整内容替换（覆盖delta累加的可能错误的内容）
+                    setMessages(prev => {
+                      const updated = [...prev];
+                      const lastIndex = updated.length - 1;
+                      const lastMessage = updated[lastIndex];
+                      if (lastMessage && lastMessage.senderId === 'mcn_001') {
+                        updated[lastIndex] = {
+                          ...lastMessage,
+                          content: {
+                            ...lastMessage.content,
+                            text: fullContent
+                          }
+                        };
+                      }
+                      return updated;
+                    });
+                    console.log('AI消息已更新(completed，替换内容):', fullContent);
+                  }
+                } else if (currentEvent === 'conversation.chat.completed') {
+                  console.log('聊天完成');
                 }
               } catch (parseError) {
-                console.error('解析流式响应失败:', parseError);
+                console.error('解析流式响应数据失败:', parseError);
               }
             }
           }
@@ -722,18 +797,20 @@ const ChatPage: React.FC = () => {
                   width: '100%',
                 }}
               >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    gap: '4px',
-                    maxWidth: '75%',
-                    flexDirection: isCurrentUser ? 'row-reverse' : 'row',
-                  }}
-                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      gap: '4px',
+                      maxWidth: '80%',
+                      width: 'fit-content',
+                      flexDirection: isCurrentUser ? 'row-reverse' : 'row',
+                    }}
+                  >
                   <div
                     style={{
                       ...styles.messageBubble,
+                      ...(message.content.text.length > 50 ? styles.messageBubbleMultiLine : {}),
                       ...(isCurrentUser ? styles.messageBubbleUser : styles.messageBubbleOther),
                     }}
                   >
@@ -1011,12 +1088,12 @@ const styles: Record<string, React.CSSProperties> = {
     flexShrink: 0,
   },
   messageBubble: {
-    maxWidth: '70%',
-    padding: '4px 8px',
+    width: '100%', // 使用父容器的宽度限制
+    padding: '8px 12px',
     borderRadius: '10px',
-    wordWrap: 'break-word',
-    wordBreak: 'break-word',
     position: 'relative',
+    whiteSpace: 'pre-wrap', // 允许换行
+    wordBreak: 'break-word', // 在单词间换行
   },
   messageBubbleUser: {
     backgroundColor: '#D1E3FF',
